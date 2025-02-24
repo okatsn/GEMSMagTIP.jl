@@ -71,13 +71,14 @@ function Serde.deser(::Type{Info}, ::Type{Phase}, data)
 end
 
 # JSON serialization
-function Serde.ser_type(::Type{Info}, var::Vector{Phase})
+# See: https://bhftbootcamp.github.io/Serde.jl/stable/pages/extended_ser/
+function Serde.SerJson.ser_type(::Type{Info}, var::Vector{Phase})
     return [Dates.format(p, info_date_format) for p in var]
     # `p` is a `Phase`
 end
 
 # Serialize a single Phase to date strings
-function Serde.ser_type(::Type{Info}, var::Phase)
+function Serde.SerJson.ser_type(::Type{Info}, var::Phase)
     return [Dates.format(var, info_date_format)]
 end
 
@@ -109,9 +110,29 @@ function Serde.deser(::Type{BestModels}, ::Type{Phase}, data)
     # `v` is a vector of two date strings.
 end
 
-function Serde.SerJson.ser_type(::Type{BestModels}, var::Phase)
-    return [Dates.format(var, frc_date_format)]
+
+
+# CHECKPOINT: Since `Serde.SerCsv.` do not have `ser_type` or `ser_value`, the following application for serialization to CSV do no effect.
+# function Serde.ser_type(::Type{BestModels}, var::Phase)
+#     return Dates.format(var.t0, frc_date_format) * "-" * Dates.format(var.t1, frc_date_format)
+# end
+# function Serde.ser_value(::Type{BestModels}, ::Val{:frc}, var::Phase)
+#     return Dates.format(var.t0, frc_date_format) * "-" * Dates.format(var.t1, frc_date_format)
+# end
+
+# Add this before the module's end
+struct NotSupported <: Exception
+    feature::String
+    message::String
 end
 
+NotSupported(feature::String) = NotSupported(feature, "Feature '$feature' is not supported yet.")
 
+function Base.showerror(io::IO, e::NotSupported)
+    print(io, "NotSupported: $(e.message)")
+end
+
+function Serde.to_csv(::Vector{BestModels})
+    throw(NotSupported("CSV serialization"))
+end
 end
