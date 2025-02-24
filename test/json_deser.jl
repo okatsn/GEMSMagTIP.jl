@@ -56,44 +56,44 @@ data1 = JSON.parse(json_data1)
 info1 = GEMSMagTIP.Info(
     "JF5lTN",  # Identifier
     # DataInterval
-    [Dates.Date.(["01-Jan-2014", "25-Jun-2024"], "d-u-Y")],
+    [["01-Jan-2014", "25-Jun-2024"]],
     # FunctionNames
     ["S", "K"],
     # FunctionHandles
     ["skewness", "kurtosis"],
     # TrainingPhase
     [
-        Dates.Date.(["01-Apr-2014", "01-Apr-2017"], "d-u-Y"),
-        Dates.Date.(["01-Oct-2014", "01-Oct-2017"], "d-u-Y"),
-        Dates.Date.(["01-Apr-2015", "01-Apr-2018"], "d-u-Y")
+        ["01-Apr-2014", "01-Apr-2017"],
+        ["01-Oct-2014", "01-Oct-2017"],
+        ["01-Apr-2015", "01-Apr-2018"]
     ],
     # ForecastingPhase
     [
-        Dates.Date.(["02-Apr-2017", "28-Sep-2017"], "d-u-Y"),
-        Dates.Date.(["02-Oct-2017", "30-Mar-2018"], "d-u-Y"),
-        Dates.Date.(["02-Apr-2018", "28-Sep-2018"], "d-u-Y")
+        ["02-Apr-2017", "28-Sep-2017"],
+        ["02-Oct-2017", "30-Mar-2018"],
+        ["02-Apr-2018", "28-Sep-2018"]
     ]
 )
 
 info_contentchanged = GEMSMagTIP.Info(
     "JF5lTN",  # Identifier
     # DataInterval
-    [Dates.Date.(["01-Jan-2014", "25-Jun-2024"], "d-u-Y")],
+    [["01-Jan-2014", "25-Jun-2024"]],
     # FunctionNames
     ["S", "K"],
     # FunctionHandles
     ["skewnessX", "kurtosis"],
     # TrainingPhase
     [
-        Dates.Date.(["01-Apr-2014", "01-Apr-2017"], "d-u-Y"),
-        Dates.Date.(["01-Oct-2014", "01-Oct-2017"], "d-u-Y"),
-        Dates.Date.(["01-Apr-2015", "01-Apr-2018"], "d-u-Y")
+        ["01-Apr-2014", "01-Apr-2017"],
+        ["01-Oct-2014", "01-Oct-2017"],
+        ["01-Apr-2015", "01-Apr-2018"]
     ],
     # ForecastingPhase
     [
-        Dates.Date.(["02-Apr-2017", "28-Sep-2017"], "d-u-Y"),
-        Dates.Date.(["02-Oct-2017", "30-Mar-2018"], "d-u-Y"),
-        Dates.Date.(["02-Apr-2018", "28-Sep-2018"], "d-u-Y")
+        ["02-Apr-2017", "28-Sep-2017"],
+        ["02-Oct-2017", "30-Mar-2018"],
+        ["02-Apr-2018", "28-Sep-2018"]
     ]
 )
 
