@@ -64,10 +64,21 @@ function Serde.deser(::Type{Info}, ::Type{Vector{Phase}}, data)
     # `v` is a vector of two date strings.
 end
 
+# Deserialize a single Phase from date strings
+function Serde.deser(::Type{Info}, ::Type{Phase}, data)
+    return Phase(Dates.Date.(only(data), info_date_format))
+    # only(data) is a vector of two strings.
+end
+
 # JSON serialization
 function Serde.SerJson.ser_type(::Type{Info}, var::Vector{Phase})
     return [Dates.format(p, info_date_format) for p in var]
     # `p` is a `Phase`
+end
+
+# Serialize a single Phase to date strings
+function Serde.SerJson.ser_type(::Type{Info}, var::Phase)
+    return [Dates.format(var, info_date_format)]
 end
 
 
