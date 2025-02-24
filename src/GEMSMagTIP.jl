@@ -71,13 +71,13 @@ function Serde.deser(::Type{Info}, ::Type{Phase}, data)
 end
 
 # JSON serialization
-function Serde.SerJson.ser_type(::Type{Info}, var::Vector{Phase})
+function Serde.ser_type(::Type{Info}, var::Vector{Phase})
     return [Dates.format(p, info_date_format) for p in var]
     # `p` is a `Phase`
 end
 
 # Serialize a single Phase to date strings
-function Serde.SerJson.ser_type(::Type{Info}, var::Phase)
+function Serde.ser_type(::Type{Info}, var::Phase)
     return [Dates.format(var, info_date_format)]
 end
 
