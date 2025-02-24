@@ -4,14 +4,48 @@ using Serde, Dates
 
 using StructEquality
 
+
+
+struct Phase
+    t0::Date
+    t1::Date
+end
+
+Phase(v::Vector) = Phase(v...)
+
+function Dates.format(p::Phase)
+    return [
+        Dates.format(p.t0, info_date_format),
+        Dates.format(p.t1, info_date_format)
+    ]
+end
+
+const info_date_format = "dd-u-Y"
+
+
+
+
+
 # `@struct_hash_equal` allows comparison of Info. See https://juliapackages.com/p/structequality
 @struct_hash_equal struct Info
     Identifier::String
-    DataInterval::Vector{Vector{Date}}
+    DataInterval::Phase
     FunctionNames::Vector{String}
     FunctionHandles::Vector{String}
-    TrainingPhase::Vector{Vector{Date}}
-    ForecastingPhase::Vector{Vector{Date}}
+    TrainingPhase::Vector{Phase}
+    ForecastingPhase::Vector{Phase}
+end
+
+
+function Info(id, di::Vector{Vector{String}}, fn, fh, tp::Vector{Vector{String}}, fp::Vector{Vector{String}})
+    Info(
+        id,
+        Phase(Dates.Date.(only(di), info_date_format)),
+        fn,
+        fh,
+        Phase.([Dates.Date.(v, info_date_format) for v in tp]),
+        Phase.([Dates.Date.(v, info_date_format) for v in fp]),
+    )
 end
 
 # KEYNOTEs:
