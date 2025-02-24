@@ -7,12 +7,11 @@ using StructEquality
 # `@struct_hash_equal` allows comparison of Info. See https://juliapackages.com/p/structequality
 @struct_hash_equal struct Info
     Identifier::String
-    # DataInterval::Vector{Vector{Date}}
-    DataInterval::Vector{Date}
+    DataInterval::Vector{Vector{Date}}
     FunctionNames::Vector{String}
     FunctionHandles::Vector{String}
-    # TrainingPhase::Vector{Vector{Date}}
-    # ForecastingPhase::Vector{Vector{Date}}
+    TrainingPhase::Vector{Vector{Date}}
+    ForecastingPhase::Vector{Vector{Date}}
 end
 
 # KEYNOTEs:
@@ -23,9 +22,11 @@ end
 # `data` is the value from `Serde.ParJson.parse_json`
 # (e.g., `Any["01-Jan-2014", "25-Jun-2024"]`).
 #
-# This means the following function should process `v` and the result returned must match the type of `ft`.
-function Serde.deser(::Type{Info}, ::Type{Vector{Date}}, v)
-    return Dates.Date.(v, "d-u-Y")
+# In summary, `deser` aims for arbitrary deserialization of `data` via
+# the following custom function that should process `data` and the result returned must match the type of `ft`.
+# The rule means, if a key (e.g., `DataInterval`) in JSON is iterated, the type corresponding the same field name of `Info` (e.g., `Info.DataInterval::Vector{Vector{Date}}`) infers the function to be dispatched to process the data.
+function Serde.deser(::Type{Info}, ::Type{Vector{Vector{Date}}}, data)
+    return [Dates.Date.(v, "d-u-Y") for v in data]
 end
 
 end
