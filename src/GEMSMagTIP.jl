@@ -26,7 +26,12 @@ end
 # the following custom function that should process `data` and the result returned must match the type of `ft`.
 # The rule means, if a key (e.g., `DataInterval`) in JSON is iterated, the type corresponding the same field name of `Info` (e.g., `Info.DataInterval::Vector{Vector{Date}}`) infers the function to be dispatched to process the data.
 function Serde.deser(::Type{Info}, ::Type{Vector{Vector{Date}}}, data)
-    return [Dates.Date.(v, "d-u-Y") for v in data]
+    return [Dates.Date.(v, "dd-u-Y") for v in data]
+end
+
+# JSON serialization
+function Serde.SerJson.ser_type(::Type{Info}, var::Vector{Vector{Date}})
+    return [Dates.format.(v, "dd-u-Y") for v in var]
 end
 
 end
