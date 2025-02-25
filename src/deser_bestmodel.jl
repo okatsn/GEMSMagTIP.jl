@@ -18,12 +18,6 @@ struct BestModels
 end
 
 
-function Serde.deser(::Type{BestModels}, ::Type{Phase}, data::String)
-    return Phase(data)
-    # `v` is a vector of two date strings.
-end
-
-
 
 # CHECKPOINT: Since `Serde.SerCsv.` do not have `ser_type` or `ser_value`, the following application for serialization to CSV do no effect.
 # function Serde.ser_type(::Type{BestModels}, var::Phase)
@@ -32,6 +26,7 @@ end
 # function Serde.ser_value(::Type{BestModels}, ::Val{:frc}, var::Phase)
 #     return Dates.format(var.t0, frc_date_format) * "-" * Dates.format(var.t1, frc_date_format)
 # end
+
 function Serde.to_csv(::Vector{BestModels})
     throw(NotSupported("CSV serialization"))
 end

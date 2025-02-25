@@ -52,6 +52,14 @@ include("deser_bestmodel.jl")
 
 include("deser_fittingdegree.jl")
 
+# # The followings are too specific,
+# Serde.deser(::Type{FittingDegree}, ::Type{Phase}, data::String) = Phase(data)
+# Serde.deser(::Type{BestModels}, ::Type{Phase}, data::String) = Phase(data) # `v` is a vector of two date strings.
+# # and can be replaced by:
+function Serde.deser(::Type{GEMSMagTIP.Phase}, data::AbstractString)
+    return GEMSMagTIP.Phase(data)
+end
+
 
 # # Extend CSV.read and JSON.parse
 

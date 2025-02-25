@@ -11,7 +11,6 @@ struct FittingDegree
 end
 
 
-Serde.deser(::Type{FittingDegree}, ::Type{Phase}, data::String) = Phase(data)
 
 function Serde.to_csv(::Vector{FittingDegree})
     throw(NotSupported("CSV serialization"))
