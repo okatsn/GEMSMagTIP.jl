@@ -51,4 +51,13 @@ include("deser_info.jl")
 include("deser_bestmodel.jl")
 
 include("deser_fittingdegree.jl")
+
+
+# # Extend CSV.read and JSON.parse
+
+using CSV
+
+include("const_filename.jl")
+
+
 end
