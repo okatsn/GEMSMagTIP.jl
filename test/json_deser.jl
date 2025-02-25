@@ -51,7 +51,7 @@ json_data1 = """
 }
 """
 
-data1 = JSON.parse(json_data1)
+dict1 = JSON.parse(json_data1) # a dictionary
 
 info1 = GEMSMagTIP.Info(
     "JF5lTN",  # Identifier
@@ -101,14 +101,14 @@ info_contentchanged = GEMSMagTIP.Info(
 @testset "json_deser.jl" begin
 
     # Test that deser_json and Serde.deser produce equivalent results when deserializing JSON
-    @test deser_json(GEMSMagTIP.Info, json_data1) == Serde.deser(GEMSMagTIP.Info, data1)
+    @test deser_json(GEMSMagTIP.Info, json_data1) == Serde.deser(GEMSMagTIP.Info, dict1)
 
     # The deserialized data in type `Info` should be identical to `Info` of exactly the same content.
     @test deser_json(GEMSMagTIP.Info, json_data1) == info1
-    @test Serde.deser(GEMSMagTIP.Info, data1) == info1
+    @test Serde.deser(GEMSMagTIP.Info, dict1) == info1
 
     # The result from serializing the data of type `Info` should be identical to the original data (compared in the type of `Dict`).
-    @test JSON.parse(to_json(info1)) == data1
+    @test JSON.parse(to_json(info1)) == dict1
 
     # Test that two Info structs with different content are not equal
     # (info_contentchanged has "skewnessX" instead of "skewness")
