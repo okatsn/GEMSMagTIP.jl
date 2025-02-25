@@ -1,6 +1,8 @@
 using Serde
 using GEMSMagTIP
 using Dates
+using CSV, DataFrames
+
 
 csv_bestmodel = """
 Mc,Rc,NthrRatio,Tthr,Tobs,Tpred,Tlead,Athr,Lat,Lon,prp,frc,stn,AlarmedRate,MissedRate,FittingDegree
@@ -15,7 +17,7 @@ Mc,Rc,NthrRatio,Tthr,Tobs,Tpred,Tlead,Athr,Lat,Lon,prp,frc,stn,AlarmedRate,Misse
 """
 
 
-@testset "csv_deser.jl" begin
+@testset "CSV BestModels" begin
     # Test CSV deserialization
     best_models = deser_csv(GEMSMagTIP.BestModels, csv_bestmodel)
 
@@ -82,47 +84,60 @@ areaTIP,nEQK,prp,frc,NEQ_min,NEQ_max,AlarmedRate,MissedRate,FittingDegree
 148.375308641975,1,BP_35,20170402-20170928,1,4,0.412793716301671,1.0,-0.41279371630167105
 """
 
-@testset "csv_deser.jl" begin
+@testset "CSV FittingDegree" begin
     # Test CSV deserialization
     fitting_degrees = deser_csv(GEMSMagTIP.FittingDegree, csv_fittingdegree)
 
     # Test that serialization produces expected format
     @test_throws GEMSMagTIP.NotSupported to_csv(fitting_degrees)
 
-    # Test we get the expected number of records
-    @test length(fitting_degrees) == 11
+    mktempdir() do path
+        file = joinpath(path, "fittingDegree.csv")
+        write(file, csv_fittingdegree)
+        df = GEMSMagTIP.read_data(file, DataFrame)
+        rows = [row for row in eachrow(df)]
+        row1 = rows[1]
+        row10 = rows[10]
+        row11 = rows[11]
+        row2 = rows[2]
 
-    # Test structure of first record
-    first_record = fitting_degrees[1]
-    @test isa(first_record, GEMSMagTIP.FittingDegree)
+        # Test we get the expected number of records
+        @test nrow(df) == length(fitting_degrees) == 11
 
-    # Test field values of first record
-    @test first_record.areaTIP ≈ 146.058765432099
-    @test first_record.nEQK == 2
-    @test first_record.prp == "BP_35"
-    @test first_record.NEQ_min == 1
-    @test first_record.NEQ_max == 4
-    @test first_record.AlarmedRate ≈ 0.331099608140137
-    @test first_record.MissedRate ≈ 0.5
-    @test first_record.FittingDegree ≈ 0.16890039185986305
+        # Test structure of first record
+        first_record = fitting_degrees[1]
+        @test isa(first_record, GEMSMagTIP.FittingDegree)
 
-    # Test Phase deserialization for date range
-    @test first_record.frc.t0 == Date(2017, 4, 2)
-    @test first_record.frc.t1 == Date(2017, 9, 28)
+        # Test field values of first record
+        @test row1.areaTIP == first_record.areaTIP ≈ 146.058765432099
+        @test row1.nEQK == first_record.nEQK == 2
+        @test row1.prp == first_record.prp == "BP_35"
+        @test row1.NEQ_min == first_record.NEQ_min == 1
+        @test row1.NEQ_max == first_record.NEQ_max == 4
+        @test row1.AlarmedRate == first_record.AlarmedRate ≈ 0.331099608140137
+        @test row1.MissedRate == first_record.MissedRate ≈ 0.5
+        @test row1.FittingDegree == first_record.FittingDegree ≈ 0.16890039185986305
 
-    # Test some specific cases
-    # Test record with highest nEQK
-    max_eqk_record = fitting_degrees[10]  # The one with 4 EQKs
-    @test max_eqk_record.nEQK == 4
-    @test max_eqk_record.MissedRate ≈ 0.75
+        # Test Phase deserialization for date range
+        @test row1.frc.t0 == first_record.frc.t0 == Date(2017, 4, 2)
+        @test row1.frc.t1 == first_record.frc.t1 == Date(2017, 9, 28)
 
-    # Test record with lowest nEQK
-    min_eqk_record = fitting_degrees[11]  # The one with 1 EQK
-    @test min_eqk_record.nEQK == 1
-    @test min_eqk_record.MissedRate ≈ 1.0
+        # Test some specific cases
+        # Test record with highest nEQK
+        max_eqk_record = fitting_degrees[10]  # The one with 4 EQKs
 
-    # Test that records with same parameters but different areaTIP are distinct
-    @test fitting_degrees[1] != fitting_degrees[2]
-    @test fitting_degrees[1].areaTIP ≈ 146.058765432099
-    @test fitting_degrees[2].areaTIP ≈ 151.453333333333
+        @test row10.nEQK == max_eqk_record.nEQK == 4
+        @test row10.MissedRate == max_eqk_record.MissedRate ≈ 0.75
+
+        # Test record with lowest nEQK
+        min_eqk_record = fitting_degrees[11]  # The one with 1 EQK
+        @test row11.nEQK == min_eqk_record.nEQK == 1
+        @test row11.MissedRate == min_eqk_record.MissedRate ≈ 1.0
+
+        # Test that records with same parameters but different areaTIP are distinct
+        @test fitting_degrees[1] != fitting_degrees[2]
+        @test row1.areaTIP == fitting_degrees[1].areaTIP ≈ 146.058765432099
+        @test row2.areaTIP == fitting_degrees[2].areaTIP ≈ 151.453333333333
+
+    end
 end
