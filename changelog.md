@@ -2,4 +2,6 @@
 
 ## v0.1.0
 
-  * Initiating the project.
+- Deserialization for fittingDegree.csv
+- Deserialization for bestModels.csv
+- Deserialization for info.json
