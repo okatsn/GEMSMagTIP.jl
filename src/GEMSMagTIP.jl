@@ -16,7 +16,8 @@ Phase(v::Vector) = Phase(v...)
 
 const frc_date_format = "yyyymmdd"
 
-function Phase(data::String)
+# KEYNOTE: `data` cannot be to specific (e.g., `data::String`), otherwise, you will encounter such as `MethodError: no method matching GEMSMagTIP.Phase(::String31)`.
+function Phase(data::AbstractString)
     v = split(data, "-")
     return Phase(Dates.Date.(v, frc_date_format))
 end

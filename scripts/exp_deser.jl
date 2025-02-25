@@ -16,6 +16,8 @@ areaTIP,nEQK,prp,frc,NEQ_min,NEQ_max,AlarmedRate,MissedRate,FittingDegree
 148.375308641975,1,BP_35,20170402-20170928,1,4,0.412793716301671,1.0,-0.41279371630167105
 """
 
+
+# file = "fittingDegree.csv"
 mktempdir() do path
     file = joinpath(path, "fittingDegree.csv")
     write(file, csv_fittingdegree)
@@ -27,5 +29,5 @@ mktempdir() do path
     output = Serde.deser_csv(GEMSMagTIP.FittingDegree, csv0)
     # works file until this line
 
-    output = Serde.to_deser(GEMSMagTIP.FittingDegree, rows[1])
+    output = Serde.to_deser(Vector{GEMSMagTIP.FittingDegree}, rows)
 end
