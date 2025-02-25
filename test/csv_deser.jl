@@ -1,7 +1,6 @@
 using Serde
 using GEMSMagTIP
 using Dates
-using JSON
 
 csv_bestmodel = """
 Mc,Rc,NthrRatio,Tthr,Tobs,Tpred,Tlead,Athr,Lat,Lon,prp,frc,stn,AlarmedRate,MissedRate,FittingDegree
@@ -65,4 +64,65 @@ Mc,Rc,NthrRatio,Tthr,Tobs,Tpred,Tlead,Athr,Lat,Lon,prp,frc,stn,AlarmedRate,Misse
     @test best_models[3].Tlead == 15
 
 
+end
+
+
+csv_fittingdegree = """
+areaTIP,nEQK,prp,frc,NEQ_min,NEQ_max,AlarmedRate,MissedRate,FittingDegree
+146.058765432099,2,BP_35,20170402-20170928,1,4,0.331099608140137,0.5,0.16890039185986305
+151.453333333333,3,BP_35,20170402-20170928,1,4,0.325472051856417,1.0,-0.3254720518564169
+159.006913580247,3,BP_35,20170402-20170928,1,4,0.355595998621071,1.0,-0.35559599862107105
+152.356543209876,3,BP_35,20170402-20170928,1,4,0.396383402156087,1.0,-0.39638340215608703
+157.493827160494,2,BP_35,20170402-20170928,1,4,0.396917770635729,1.0,-0.396917770635729
+153.098765432099,3,BP_35,20170402-20170928,1,4,0.418104991532941,1.0,-0.418104991532941
+148.845432098765,2,BP_35,20170402-20170928,1,4,0.41917043780606,1.0,-0.41917043780606
+159.763456790123,3,BP_35,20170402-20170928,1,4,0.381347733222882,1.0,-0.38134773322288207
+154.374320987654,2,BP_35,20170402-20170928,1,4,0.408313286928038,1.0,-0.4083132869280379
+155.745679012346,4,BP_35,20170402-20170928,1,4,0.383746849089209,0.75,-0.13374684908920897
+148.375308641975,1,BP_35,20170402-20170928,1,4,0.412793716301671,1.0,-0.41279371630167105
+"""
+
+@testset "csv_deser.jl" begin
+    # Test CSV deserialization
+    fitting_degrees = deser_csv(GEMSMagTIP.FittingDegree, csv_fittingdegree)
+
+    # Test that serialization produces expected format
+    @test_throws GEMSMagTIP.NotSupported to_csv(fitting_degrees)
+
+    # Test we get the expected number of records
+    @test length(fitting_degrees) == 11
+
+    # Test structure of first record
+    first_record = fitting_degrees[1]
+    @test isa(first_record, GEMSMagTIP.FittingDegree)
+
+    # Test field values of first record
+    @test first_record.areaTIP ≈ 146.058765432099
+    @test first_record.nEQK == 2
+    @test first_record.prp == "BP_35"
+    @test first_record.NEQ_min == 1
+    @test first_record.NEQ_max == 4
+    @test first_record.AlarmedRate ≈ 0.331099608140137
+    @test first_record.MissedRate ≈ 0.5
+    @test first_record.FittingDegree ≈ 0.16890039185986305
+
+    # Test Phase deserialization for date range
+    @test first_record.frc.t0 == Date(2017, 4, 2)
+    @test first_record.frc.t1 == Date(2017, 9, 28)
+
+    # Test some specific cases
+    # Test record with highest nEQK
+    max_eqk_record = fitting_degrees[10]  # The one with 4 EQKs
+    @test max_eqk_record.nEQK == 4
+    @test max_eqk_record.MissedRate ≈ 0.75
+
+    # Test record with lowest nEQK
+    min_eqk_record = fitting_degrees[11]  # The one with 1 EQK
+    @test min_eqk_record.nEQK == 1
+    @test min_eqk_record.MissedRate ≈ 1.0
+
+    # Test that records with same parameters but different areaTIP are distinct
+    @test fitting_degrees[1] != fitting_degrees[2]
+    @test fitting_degrees[1].areaTIP ≈ 146.058765432099
+    @test fitting_degrees[2].areaTIP ≈ 151.453333333333
 end

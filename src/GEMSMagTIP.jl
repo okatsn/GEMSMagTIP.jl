@@ -50,5 +50,5 @@ include("deser_info.jl")
 
 include("deser_bestmodel.jl")
 
-
+include("deser_fittingdegree.jl")
 end
