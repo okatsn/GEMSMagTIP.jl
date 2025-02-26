@@ -2,7 +2,8 @@ using Serde
 using GEMSMagTIP
 using Dates
 using CSV, DataFrames
-
+using OkTableTools
+using Chain
 
 csv_bestmodel = """
 Mc,Rc,NthrRatio,Tthr,Tobs,Tpred,Tlead,Athr,Lat,Lon,prp,frc,stn,AlarmedRate,MissedRate,FittingDegree
@@ -237,5 +238,13 @@ DateTime,stn,ID,prp,var_S_NS,var_S_EW,var_K_NS,var_K_EW,var_SE_NS,var_SE_EW,varQ
         @test first_stat.prp == "BP_35"
         @test first_stat.varQuality ≈ 0.96222299382716
         @test first_stat.var.var_S_NS ≈ -0.0927770121892476
+
+        # Revert `df`
+        dfr = @chain df begin
+            transform(:var => AsTable)
+            select(Not(:var))
+            transform(:DateTime => ByRow(t -> Dates.format(t, GEMSMagTIP.info_date_format)); renamecols=false)
+        end
+        @test dataframes_equal(df0, dfr)
     end
 end

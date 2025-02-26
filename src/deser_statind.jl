@@ -1,3 +1,27 @@
+"""
+```
+struct StatInd
+    DateTime::Date
+    stn::String
+    ID::String
+    prp::String
+    var::NamedTuple
+    varQuality::Float64
+end
+```
+
+`df = GEMSMagTIP.read_data(file, DataFrame)`.
+
+To revert `df` the same columns as the csv `file`:
+
+```
+@chain df begin
+    transform(:var => AsTable)
+    select(Not(:var))
+    transform(:DateTime => ByRow(t -> Dates.format(t, GEMSMagTIP.info_date_format)); renamecols=false)
+end
+```
+"""
 struct StatInd
     DateTime::Date
     stn::String
