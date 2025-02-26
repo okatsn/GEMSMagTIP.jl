@@ -4,7 +4,7 @@ using Serde, Dates
 
 using StructEquality
 
-
+using Chain
 
 struct Phase
     t0::Date
@@ -47,11 +47,25 @@ function Base.showerror(io::IO, e::NotSupported)
 end
 
 
+# # Deserialization for specific format
+
+const info_date_format = "dd-u-Y"
+include("const_filename.jl")
+
+
 include("deser_info.jl")
 
 include("deser_bestmodel.jl")
 
 include("deser_fittingdegree.jl")
+
+using DataFrames
+
+include("deser_statind.jl")
+
+
+# # General deserialization codes
+
 
 # # The followings are too specific,
 # Serde.deser(::Type{FittingDegree}, ::Type{Phase}, data::String) = Phase(data)
@@ -71,7 +85,6 @@ end
 
 using CSV
 
-include("const_filename.jl")
 include("core_read.jl")
 
 
