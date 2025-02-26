@@ -142,3 +142,100 @@ areaTIP,nEQK,prp,frc,NEQ_min,NEQ_max,AlarmedRate,MissedRate,FittingDegree
 
     end
 end
+
+
+csv_statind = """
+DateTime,stn,ID,prp,var_S_NS,var_S_EW,var_K_NS,var_K_EW,var_SE_NS,var_SE_EW,varQuality,var_S_x,var_S_y,var_S_z,var_K_x,var_K_y,var_K_z,var_SE_x,var_SE_y,var_SE_z,var_K,var_S,var_SE
+01-Jan-2014,CHCH,AMn6ei,BP_35,-0.0927770121892476,-1.31874297807944,4.37903614786034,13.064348617259,-5.5803137772684,-6.31776573453275,0.96222299382716,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN
+02-Jan-2014,CHCH,AMn6ei,BP_35,0.187720693444812,-0.264511576155514,6.54105004873713,4.79664867202574,-5.81313692082173,-6.09675918233375,0.954804012345679,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN
+03-Jan-2014,CHCH,AMn6ei,BP_35,-0.00844443916921936,-0.127375504393208,4.89829001181269,5.34293498626927,-5.71858373287784,-6.07397682964251,0.991033179012346,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN
+04-Jan-2014,CHCH,AMn6ei,BP_35,-0.0414044203162809,-0.148199925708041,7.40946320265025,6.63452522842359,-5.91663963477171,-6.41910093510377,0.97149112654321,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN
+05-Jan-2014,CHCH,AMn6ei,BP_35,1.60762564931821,-1.02326158017884,29.4399895410091,12.5142689105151,-6.02998555779309,-6.45526073796715,0.998194444444444,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN
+06-Jan-2014,CHCH,AMn6ei,BP_35,-0.296415379821155,-0.120612223140257,6.72995703810994,10.9870898235287,-6.18037210771856,-6.32856717462572,0.959003086419753,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN
+07-Jan-2014,CHCH,AMn6ei,BP_35,0.499346790569236,-0.463512131235742,10.7822824059376,5.68181864971525,-6.10632444729206,-6.31376091445911,0.951907407407407,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN
+08-Jan-2014,CHCH,AMn6ei,BP_35,0.817531166038516,2.12452639723315,13.8178460799605,26.5446773517998,-5.84701426294977,-6.27127152807284,0.893319830246914,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN
+09-Jan-2014,CHCH,AMn6ei,BP_35,0.332470478056347,0.0572627911405571,11.5359107276184,5.98523837622511,-5.97831720439458,-6.39653142991098,0.969042438271605,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN
+10-Jan-2014,CHCH,AMn6ei,BP_35,1.22352198314208,0.734538227098344,16.7991258631776,12.9480994103386,-5.92978665351276,-6.1574046117693,0.968595679012346,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN
+11-Jan-2014,CHCH,AMn6ei,BP_35,0.850146763991446,-0.433661274397261,24.7140843542151,5.55554749239246,-6.25214963464028,-6.41114515197611,0.983897762345679,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN
+12-Jan-2014,CHCH,AMn6ei,BP_35,1.07829085762279,-0.154353918670885,14.4540662741981,4.66344636793813,-5.85276811950442,-6.27160200259897,0.930127314814815,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN
+"""
+
+@testset "CSV Statind" begin
+    mktempdir() do path
+        file = joinpath(path, "StatInd.csv")
+        write(file, csv_statind)
+
+        # df0 is the raw CSV read directly into a DataFrame.
+        df0 = CSV.read(file, DataFrame)
+        # df is the processed DataFrame from GEMSMagTIP.read_data
+        df = GEMSMagTIP.read_data(file, DataFrame)
+
+        # Check that df0 has the original CSV structure.
+        @test nrow(df0) == 12
+        @test ncol(df0) == 23
+
+        # Check that the processed DataFrame has the expected columns.
+        @test nrow(df) == 12
+        @test ncol(df) == 6
+        @test Set(names(df)) == Set(["DateTime", "stn", "ID", "prp", "var", "varQuality"])
+
+        # Test content of the first row.
+        row1 = first(eachrow(df))
+
+        # Test that all var_* columns are consolidated into the var NamedTuple
+        @test !any(contains.(names(df), "var_"))
+        @test isa(row1.var, NamedTuple)
+
+        # Test specific values in first row
+        @test row1.DateTime == Date(2014, 1, 1)
+        @test row1.stn == "CHCH"
+        @test row1.ID == "AMn6ei"
+        @test row1.prp == "BP_35"
+        @test row1.varQuality ≈ 0.96222299382716
+        @test isa(row1.var, NamedTuple)
+        @test haskey(row1.var, :var_S_NS)
+        @test row1.var.var_S_NS ≈ -0.0927770121892476
+        @test row1.var.var_S_NS ≈ -0.0927770121892476
+        @test row1.var.var_S_EW ≈ -1.31874297807944
+        @test row1.var.var_K_NS ≈ 4.37903614786034
+        @test row1.var.var_K_EW ≈ 13.064348617259
+        @test row1.var.var_SE_NS ≈ -5.5803137772684
+        @test row1.var.var_SE_EW ≈ -6.31776573453275
+
+        # Test content of an additional row (e.g., the 5th row).
+        row5 = df[5, :]
+        @test row5.DateTime == Date(2014, 1, 5)
+        @test row5.stn == "CHCH"
+        @test row5.ID == "AMn6ei"
+        @test row5.prp == "BP_35"
+        @test row5.varQuality ≈ 0.998194444444444
+        @test isa(row5.var, NamedTuple)
+        @test haskey(row5.var, :var_S_NS)
+        @test row5.var.var_S_NS ≈ 1.60762564931821
+
+
+        # Test specific values in last row
+        row12 = last(eachrow(df))
+        @test row12.DateTime == Date(2014, 1, 12)
+        @test row12.varQuality ≈ 0.930127314814815
+        @test row12.var.var_S_NS ≈ 1.07829085762279
+        @test row12.var.var_K_EW ≈ 4.66344636793813
+
+        # Test that NaN values are preserved in the var NamedTuple
+        @test all(isnan.(values(row1.var)[12:end]))  # var_S_x through var_SE
+
+        # Test conversion to Vector{StatInd}
+        stat_vec = GEMSMagTIP.read_data(file, Vector{GEMSMagTIP.StatInd})
+        @test length(stat_vec) == 12
+        @test isa(stat_vec[1], GEMSMagTIP.StatInd)
+
+        # Test first StatInd object
+        first_stat = stat_vec[1]
+        @test first_stat.DateTime == Date(2014, 1, 1)
+        @test first_stat.stn == "CHCH"
+        @test first_stat.ID == "AMn6ei"
+        @test first_stat.prp == "BP_35"
+        @test first_stat.varQuality ≈ 0.96222299382716
+        @test first_stat.var.var_S_NS ≈ -0.0927770121892476
+    end
+end

@@ -20,6 +20,7 @@ read_data(path, sink) = core_read(path) |> sink
 
 core_read(::Val{file_fittingdegree}, path) = _vec_deser(FittingDegree, path)
 core_read(::Val{file_bestmodels}, path) = _vec_deser(BestModels, path)
+core_read(::Val{file_statind}, path) = _statind_deser(StatInd, path) # it's special
 
 
 function _vec_deser(T, path)

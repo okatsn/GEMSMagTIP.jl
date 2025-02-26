@@ -1,6 +1,3 @@
-const info_date_format = "dd-u-Y"
-
-
 # `@struct_hash_equal` allows comparison of Info. See https://juliapackages.com/p/structequality
 @struct_hash_equal struct Info
     Identifier::String
