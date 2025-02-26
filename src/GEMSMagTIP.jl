@@ -58,6 +58,11 @@ include("deser_fittingdegree.jl")
 # Serde.deser(::Type{BestModels}, ::Type{Phase}, data::String) = Phase(data) # `v` is a vector of two date strings.
 # # and can be replaced by:
 function Serde.deser(::Type{GEMSMagTIP.Phase}, data::AbstractString)
+    # This function means that, for `T` (e.g., `FittingDegree`) in
+    # `Serde.deser_csv(::Type{T}, csv_bestmodel)`,
+    # for the field(s) of `T` being `Phase` (e.g., `frc::Phase`),
+    # the data in the column of name the same as the field name (e.g., `frc`),
+    # will be processed here.
     return GEMSMagTIP.Phase(data)
 end
 

@@ -18,23 +18,16 @@ Mc,Rc,NthrRatio,Tthr,Tobs,Tpred,Tlead,Athr,Lat,Lon,prp,frc,stn,AlarmedRate,Misse
 
 
 @testset "CSV BestModels" begin
-    # Test CSV deserialization
-    best_models = deser_csv(GEMSMagTIP.BestModels, csv_bestmodel)
+    # Test CSV deserialization via deser_csv (which uses parse_csv internally)
+    best_models = Serde.deser_csv(GEMSMagTIP.BestModels, csv_bestmodel)
 
-    # Test that serialization produces expected format
-    @test_throws GEMSMagTIP.NotSupported to_csv(best_models)
-
-
-
-    # # Stupid Claude tests:
-    # Test we get the expected number of models
+    # Test that CSV serialization is not supported for BestModels
+    @test_throws GEMSMagTIP.NotSupported Serde.to_csv(best_models)
     @test length(best_models) == 8
 
-    # Test structure of first model
+    # Test individual field values in the first model
     first_model = best_models[1]
     @test isa(first_model, GEMSMagTIP.BestModels)
-
-    # Test field values of first model
     @test first_model.Mc == 5
     @test first_model.Rc == 50
     @test first_model.NthrRatio ≈ 0.001
@@ -51,21 +44,28 @@ Mc,Rc,NthrRatio,Tthr,Tobs,Tpred,Tlead,Athr,Lat,Lon,prp,frc,stn,AlarmedRate,Misse
     @test first_model.MissedRate ≈ 0.0
     @test first_model.FittingDegree ≈ 0.782086795937211
 
-    # Test Phase deserialization for date range
+    # Test that the Phase field is correctly parsed from the string "20170402-20170928"
     @test first_model.frc.t0 == Date(2017, 4, 2)
     @test first_model.frc.t1 == Date(2017, 9, 28)
 
-    # Test that models with same parameters but different Rc are distinct
+    # Test distinctness: models with same parameters but different Rc
     @test best_models[1] != best_models[2]
     @test best_models[1].Rc == 50
     @test best_models[2].Rc == 60
 
-    # Test that same station/parameters with different Tlead are distinct
+    # Test distinctness for models with same station/parameters but different Tlead
     @test best_models[1] != best_models[3]
     @test best_models[1].Tlead == 5
     @test best_models[3].Tlead == 15
 
-
+    # --- Additional test for file-based CSV reading via core_read ---
+    # Write the CSV string to a temporary file.
+    mktemp() do io, temp_file
+        write(io, csv_bestmodel)
+        core_models = GEMSMagTIP.core_read(Val(GEMSMagTIP.file_bestmodels), temp_file)
+        @test length(core_models) == 8
+        @test core_models[1] == first_model
+    end
 end
 
 
