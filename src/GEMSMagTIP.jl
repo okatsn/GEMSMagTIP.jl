@@ -73,7 +73,6 @@ using CSV
 
 include("const_filename.jl")
 include("core_read.jl")
-include("csv_read.jl")
 
 
 end
