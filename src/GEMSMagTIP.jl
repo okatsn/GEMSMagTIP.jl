@@ -16,7 +16,8 @@ Phase(v::Vector) = Phase(v...)
 
 const frc_date_format = "yyyymmdd"
 
-function Phase(data::String)
+# KEYNOTE: `data` cannot be to specific (e.g., `data::String`), otherwise, you will encounter such as `MethodError: no method matching GEMSMagTIP.Phase(::String31)`.
+function Phase(data::AbstractString)
     v = split(data, "-")
     return Phase(Dates.Date.(v, frc_date_format))
 end
@@ -51,4 +52,28 @@ include("deser_info.jl")
 include("deser_bestmodel.jl")
 
 include("deser_fittingdegree.jl")
+
+# # The followings are too specific,
+# Serde.deser(::Type{FittingDegree}, ::Type{Phase}, data::String) = Phase(data)
+# Serde.deser(::Type{BestModels}, ::Type{Phase}, data::String) = Phase(data) # `v` is a vector of two date strings.
+# # and can be replaced by:
+function Serde.deser(::Type{GEMSMagTIP.Phase}, data::AbstractString)
+    # This function means that, for `T` (e.g., `FittingDegree`) in
+    # `Serde.deser_csv(::Type{T}, csv_bestmodel)`,
+    # for the field(s) of `T` being `Phase` (e.g., `frc::Phase`),
+    # the data in the column of name the same as the field name (e.g., `frc`),
+    # will be processed here.
+    return GEMSMagTIP.Phase(data)
+end
+
+
+# # Extend CSV.read and JSON.parse
+
+using CSV
+
+include("const_filename.jl")
+include("core_read.jl")
+include("csv_read.jl")
+
+
 end
