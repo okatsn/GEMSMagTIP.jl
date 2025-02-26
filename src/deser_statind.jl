@@ -1,6 +1,5 @@
 struct StatInd
-    # DateTime::Dates.Date # TODO
-    DateTime::String
+    DateTime::Date
     stn::String
     ID::String
     prp::String
@@ -20,6 +19,6 @@ function _statind_deser(T, path)
     output = Serde.to_deser(Vector{T}, rows)
 end
 
-# function Serde.deser(::Type{StatInd}, ::Type{Dates.Date}, data)
-#     return
-# end
+function Serde.deser(::Type{StatInd}, ::Type{Dates.Date}, data)
+    return Dates.Date(data, info_date_format)
+end

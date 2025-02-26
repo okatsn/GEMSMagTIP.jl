@@ -187,7 +187,7 @@ DateTime,stn,ID,prp,var_S_NS,var_S_EW,var_K_NS,var_K_EW,var_SE_NS,var_SE_EW,varQ
         @test isa(row1.var, NamedTuple)
 
         # Test specific values in first row
-        @test row1.DateTime == "01-Jan-2014"
+        @test row1.DateTime == Date(2014, 1, 1)
         @test row1.stn == "CHCH"
         @test row1.ID == "AMn6ei"
         @test row1.prp == "BP_35"
@@ -204,7 +204,7 @@ DateTime,stn,ID,prp,var_S_NS,var_S_EW,var_K_NS,var_K_EW,var_SE_NS,var_SE_EW,varQ
 
         # Test content of an additional row (e.g., the 5th row).
         row5 = df[5, :]
-        @test row5.DateTime == "05-Jan-2014"
+        @test row5.DateTime == Date(2014, 1, 5)
         @test row5.stn == "CHCH"
         @test row5.ID == "AMn6ei"
         @test row5.prp == "BP_35"
@@ -216,7 +216,7 @@ DateTime,stn,ID,prp,var_S_NS,var_S_EW,var_K_NS,var_K_EW,var_SE_NS,var_SE_EW,varQ
 
         # Test specific values in last row
         row12 = last(eachrow(df))
-        @test row12.DateTime == "12-Jan-2014"
+        @test row12.DateTime == Date(2014, 1, 12)
         @test row12.varQuality ≈ 0.930127314814815
         @test row12.var.var_S_NS ≈ 1.07829085762279
         @test row12.var.var_K_EW ≈ 4.66344636793813
@@ -231,7 +231,7 @@ DateTime,stn,ID,prp,var_S_NS,var_S_EW,var_K_NS,var_K_EW,var_SE_NS,var_SE_EW,varQ
 
         # Test first StatInd object
         first_stat = stat_vec[1]
-        @test first_stat.DateTime == "01-Jan-2014"
+        @test first_stat.DateTime == Date(2014, 1, 1)
         @test first_stat.stn == "CHCH"
         @test first_stat.ID == "AMn6ei"
         @test first_stat.prp == "BP_35"
