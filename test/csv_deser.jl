@@ -180,7 +180,13 @@ DateTime,stn,ID,prp,var_S_NS,var_S_EW,var_K_NS,var_K_EW,var_SE_NS,var_SE_EW,varQ
         @test Set(names(df)) == Set(["DateTime", "stn", "ID", "prp", "var", "varQuality"])
 
         # Test content of the first row.
-        row1 = df[1, :]
+        row1 = first(eachrow(df))
+
+        # Test that all var_* columns are consolidated into the var NamedTuple
+        @test !any(contains.(names(df), "var_"))
+        @test isa(row1.var, NamedTuple)
+
+        # Test specific values in first row
         @test row1.DateTime == "01-Jan-2014"
         @test row1.stn == "CHCH"
         @test row1.ID == "AMn6ei"
@@ -189,6 +195,12 @@ DateTime,stn,ID,prp,var_S_NS,var_S_EW,var_K_NS,var_K_EW,var_SE_NS,var_SE_EW,varQ
         @test isa(row1.var, NamedTuple)
         @test haskey(row1.var, :var_S_NS)
         @test row1.var.var_S_NS ≈ -0.0927770121892476
+        @test row1.var.var_S_NS ≈ -0.0927770121892476
+        @test row1.var.var_S_EW ≈ -1.31874297807944
+        @test row1.var.var_K_NS ≈ 4.37903614786034
+        @test row1.var.var_K_EW ≈ 13.064348617259
+        @test row1.var.var_SE_NS ≈ -5.5803137772684
+        @test row1.var.var_SE_EW ≈ -6.31776573453275
 
         # Test content of an additional row (e.g., the 5th row).
         row5 = df[5, :]
@@ -200,5 +212,30 @@ DateTime,stn,ID,prp,var_S_NS,var_S_EW,var_K_NS,var_K_EW,var_SE_NS,var_SE_EW,varQ
         @test isa(row5.var, NamedTuple)
         @test haskey(row5.var, :var_S_NS)
         @test row5.var.var_S_NS ≈ 1.60762564931821
+
+
+        # Test specific values in last row
+        row12 = last(eachrow(df))
+        @test row12.DateTime == "12-Jan-2014"
+        @test row12.varQuality ≈ 0.930127314814815
+        @test row12.var.var_S_NS ≈ 1.07829085762279
+        @test row12.var.var_K_EW ≈ 4.66344636793813
+
+        # Test that NaN values are preserved in the var NamedTuple
+        @test all(isnan.(values(row1.var)[12:end]))  # var_S_x through var_SE
+
+        # Test conversion to Vector{StatInd}
+        stat_vec = GEMSMagTIP.read_data(file, Vector{GEMSMagTIP.StatInd})
+        @test length(stat_vec) == 12
+        @test isa(stat_vec[1], GEMSMagTIP.StatInd)
+
+        # Test first StatInd object
+        first_stat = stat_vec[1]
+        @test first_stat.DateTime == "01-Jan-2014"
+        @test first_stat.stn == "CHCH"
+        @test first_stat.ID == "AMn6ei"
+        @test first_stat.prp == "BP_35"
+        @test first_stat.varQuality ≈ 0.96222299382716
+        @test first_stat.var.var_S_NS ≈ -0.0927770121892476
     end
 end
