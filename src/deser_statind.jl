@@ -34,7 +34,12 @@ end
 const expr_matchstatvar = r"\Avar\_"
 
 const standard_code = Dict(
-    "" => "Full"
+    "" => "Full",
+    "EW" => "EW",
+    "NS" => "NS",
+    "x" => "North",
+    "y" => "East",
+    "z" => "Down",
 )
 
 """
@@ -43,32 +48,32 @@ const standard_code = Dict(
 For example,
 
 ```jldoctest
-julia> standardize_var_name("S")
+julia> GEMSMagTIP.standardize_var_name("S")
 "S_Full"
 
-julia> standardize_var_name("S_x")
+julia> GEMSMagTIP.standardize_var_name("S_x")
 "S_North"
 
-julia> standardize_var_name("S_y")
+julia> GEMSMagTIP.standardize_var_name("S_y")
 "S_East"
 
-julia> standardize_var_name("S_z")
+julia> GEMSMagTIP.standardize_var_name("S_z")
 "S_Down"
 
-julia> standardize_var_name("S_EW")
+julia> GEMSMagTIP.standardize_var_name("S_EW")
 "S_EW"
 
-julia> standardize_var_name("S_NS")
+julia> GEMSMagTIP.standardize_var_name("S_NS")
 "S_NS"
 ```
 
 Additional prefix will be preserved:
 
 ```jldoctest
-julia> standardize_var_name("var_S")
+julia> GEMSMagTIP.standardize_var_name("var_S")
 "var_S_Full"
 
-julia> standardize_var_name("var_S_EW")
+julia> GEMSMagTIP.standardize_var_name("var_S_EW")
 "var_S_EW"
 ```
 """
