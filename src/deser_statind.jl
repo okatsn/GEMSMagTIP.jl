@@ -94,6 +94,7 @@ end
 function _statind_deser(T, path)
     stat = CSV.read(path, DataFrame)
     stat1 = @chain stat begin
+        rename(GEMSMagTIP.standardize_var_suffix, _; cols=Cols(expr_matchstatvar))
         transform(AsTable(expr_matchstatvar) => ByRow(identity) => Symbol(prefix_var))
         select(Not(expr_matchstatvar))
     end
