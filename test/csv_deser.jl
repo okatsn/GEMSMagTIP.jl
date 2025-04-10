@@ -239,12 +239,23 @@ DateTime,stn,ID,prp,var_S_NS,var_S_EW,var_K_NS,var_K_EW,var_SE_NS,var_SE_EW,varQ
         @test first_stat.varQuality ≈ 0.96222299382716
         @test first_stat.var.var_S_NS ≈ -0.0927770121892476
 
+        # Test whether the variable names are standardized
+
+        @test isnan(first_stat.var.var_S_North)
+        @test isnan(first_stat.var.var_S_East)
+        @test isnan(first_stat.var.var_S_Down)
+        @test_throws "type NamedTuple has no field" isnan(first_stat.var.var_S_x)
+        @test_throws "type NamedTuple has no field" isnan(first_stat.var.var_S_y)
+        @test_throws "type NamedTuple has no field" isnan(first_stat.var.var_S_z)
+
         # Revert `df`
         dfr = @chain df begin
             transform(:var => AsTable)
             select(Not(:var))
             transform(:DateTime => ByRow(t -> Dates.format(t, GEMSMagTIP.info_date_format)); renamecols=false)
         end
-        @test dataframes_equal(df0, dfr)
+        @test dataframes_equal(
+            rename(GEMSMagTIP.standardize_var_suffix, df0; cols=Cols(GEMSMagTIP.expr_matchstatvar)),
+            dfr)
     end
 end
