@@ -33,6 +33,8 @@ end
 
 const expr_matchstatvar = r"\Avar\_"
 
+const prefix_var = "var"
+
 const standard_code = Dict(
     "" => "Full",
     "EW" => "EW",
@@ -67,7 +69,7 @@ julia> GEMSMagTIP.standardize_var_name("S_NS")
 "S_NS"
 ```
 
-Additional prefix will be preserved:
+Additional prefix of "$(prefix_var)_" will be preserved:
 
 ```jldoctest
 julia> GEMSMagTIP.standardize_var_name("var_S")
@@ -80,9 +82,11 @@ julia> GEMSMagTIP.standardize_var_name("var_S_EW")
 function standardize_var_name(s::AbstractString)
     sv = rsplit(s, "_", limit=2)
 
-    if length(sv) == 1
+    if length(sv) == 1 ||
+       (first(sv) == prefix_var && length(sv) == 2) # Consider also the case like "var_S"
         push!(sv, "")
     end
+
     sv[end] = standard_code[last(sv)]
     join(sv, "_")
 end
@@ -90,7 +94,7 @@ end
 function _statind_deser(T, path)
     stat = CSV.read(path, DataFrame)
     stat1 = @chain stat begin
-        transform(AsTable(expr_matchstatvar) => ByRow(identity) => :var)
+        transform(AsTable(expr_matchstatvar) => ByRow(identity) => Symbol(prefix_var))
         select(Not(expr_matchstatvar))
     end
     rows = stat1 |> CSV.rowtable
