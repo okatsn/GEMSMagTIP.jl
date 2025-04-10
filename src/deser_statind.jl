@@ -45,41 +45,41 @@ const standard_code = Dict(
 )
 
 """
-`standardize_var_name` standardize the direction suffix of a variable name.
+`standardize_var_suffix` standardize the direction suffix of a variable name.
 
 For example,
 
 ```jldoctest
-julia> GEMSMagTIP.standardize_var_name("S")
+julia> GEMSMagTIP.standardize_var_suffix("S")
 "S_Full"
 
-julia> GEMSMagTIP.standardize_var_name("S_x")
+julia> GEMSMagTIP.standardize_var_suffix("S_x")
 "S_North"
 
-julia> GEMSMagTIP.standardize_var_name("S_y")
+julia> GEMSMagTIP.standardize_var_suffix("S_y")
 "S_East"
 
-julia> GEMSMagTIP.standardize_var_name("S_z")
+julia> GEMSMagTIP.standardize_var_suffix("S_z")
 "S_Down"
 
-julia> GEMSMagTIP.standardize_var_name("S_EW")
+julia> GEMSMagTIP.standardize_var_suffix("S_EW")
 "S_EW"
 
-julia> GEMSMagTIP.standardize_var_name("S_NS")
+julia> GEMSMagTIP.standardize_var_suffix("S_NS")
 "S_NS"
 ```
 
 Additional prefix of "$(prefix_var)_" will be preserved:
 
 ```jldoctest
-julia> GEMSMagTIP.standardize_var_name("var_S")
+julia> GEMSMagTIP.standardize_var_suffix("var_S")
 "var_S_Full"
 
-julia> GEMSMagTIP.standardize_var_name("var_S_EW")
+julia> GEMSMagTIP.standardize_var_suffix("var_S_EW")
 "var_S_EW"
 ```
 """
-function standardize_var_name(s::AbstractString)
+function standardize_var_suffix(s::AbstractString)
     sv = rsplit(s, "_", limit=2)
 
     if length(sv) == 1 ||
