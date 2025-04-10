@@ -33,6 +33,55 @@ end
 
 const expr_matchstatvar = r"\Avar\_"
 
+const standard_code = Dict(
+    "" => "Full"
+)
+
+"""
+`standardize_var_name` standardize the direction suffix of a variable name.
+
+For example,
+
+```jldoctest
+julia> standardize_var_name("S")
+"S_Full"
+
+julia> standardize_var_name("S_x")
+"S_North"
+
+julia> standardize_var_name("S_y")
+"S_East"
+
+julia> standardize_var_name("S_z")
+"S_Down"
+
+julia> standardize_var_name("S_EW")
+"S_EW"
+
+julia> standardize_var_name("S_NS")
+"S_NS"
+```
+
+Additional prefix will be preserved:
+
+```jldoctest
+julia> standardize_var_name("var_S")
+"var_S_Full"
+
+julia> standardize_var_name("var_S_EW")
+"var_S_EW"
+```
+"""
+function standardize_var_name(s::AbstractString)
+    sv = rsplit(s, "_", limit=2)
+
+    if length(sv) == 1
+        push!(sv, "")
+    end
+    sv[end] = standard_code[last(sv)]
+    join(sv, "_")
+end
+
 function _statind_deser(T, path)
     stat = CSV.read(path, DataFrame)
     stat1 = @chain stat begin
