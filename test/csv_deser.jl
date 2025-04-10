@@ -254,6 +254,8 @@ DateTime,stn,ID,prp,var_S_NS,var_S_EW,var_K_NS,var_K_EW,var_SE_NS,var_SE_EW,varQ
             select(Not(:var))
             transform(:DateTime => ByRow(t -> Dates.format(t, GEMSMagTIP.info_date_format)); renamecols=false)
         end
-        @test dataframes_equal(df0, dfr)
+        @test dataframes_equal(
+            rename(GEMSMagTIP.standardize_var_suffix, df0; cols=Cols(GEMSMagTIP.expr_matchstatvar)),
+            dfr)
     end
 end
