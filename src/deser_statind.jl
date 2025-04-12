@@ -25,7 +25,6 @@ end
 struct StatInd
     DateTime::Date
     stn::String
-    ID::String
     prp::String
     var::NamedTuple
     varQuality::Float64
