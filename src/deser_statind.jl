@@ -22,7 +22,7 @@ To revert `df` the same columns as the csv `file`:
 end
 ```
 """
-struct StatInd
+struct StatInd <: CSVRow
     DateTime::Date
     stn::String
     prp::String
@@ -31,7 +31,7 @@ struct StatInd
 end
 
 
-struct StatInd_long
+struct StatInd_long <: CSVRow
     DateTime::Date
     stn::String
     prp::String

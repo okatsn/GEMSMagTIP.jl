@@ -1,4 +1,4 @@
-struct FittingDegree
+struct FittingDegree <: CSVRow
     areaTIP::Float64
     nEQK::Int64
     prp::String
