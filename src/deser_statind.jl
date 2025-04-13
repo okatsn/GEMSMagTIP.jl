@@ -30,6 +30,17 @@ struct StatInd
     varQuality::Float64
 end
 
+
+struct StatInd_long
+    DateTime::Date
+    stn::String
+    prp::String
+    variable::String
+    var_type::String
+    var_comp::String
+    varQuality::Float64
+end
+
 const expr_matchstatvar = r"\Avar\_"
 
 const prefix_var = "var"
@@ -90,7 +101,18 @@ function standardize_var_suffix(s::AbstractString)
     join(sv, "_")
 end
 
-function _statind_deser(T, path)
+function _statind_deser(T::StatInd, path)
+    stat = CSV.read(path, DataFrame)
+    stat1 = @chain stat begin
+        rename(GEMSMagTIP.standardize_var_suffix, _; cols=Cols(expr_matchstatvar))
+        transform(AsTable(expr_matchstatvar) => ByRow(identity) => Symbol(prefix_var))
+        select(Not(expr_matchstatvar))
+    end
+    rows = stat1 |> CSV.rowtable
+    output = Serde.to_deser(Vector{T}, rows)
+end
+
+function _statind_deser(T::StatInd_long, path)
     stat = CSV.read(path, DataFrame)
     stat1 = @chain stat begin
         rename(GEMSMagTIP.standardize_var_suffix, _; cols=Cols(expr_matchstatvar))
