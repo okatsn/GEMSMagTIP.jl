@@ -110,7 +110,8 @@ function standardize_var_suffix(s::AbstractString)
     join(sv, "_")
 end
 
-function _statind_deser(T::Type{StatInd}, path)
+# Specialized data preprocessing.
+function _vec_deser(T::Type{StatInd}, path)
     stat = CSV.read(path, DataFrame)
     stat1 = @chain stat begin
         rename(GEMSMagTIP.standardize_var_suffix, _; cols=Cols(expr_matchstatvar))
@@ -134,7 +135,8 @@ function varstr2nt(v)
     NamedTuple{(:var_type, :var_comp)}(sv)
 end
 
-function _statind_deser(T::Type{StatInd_long}, path)
+# Specialized data preprocessing.
+function _vec_deser(T::Type{StatInd_long}, path)
     stat = CSV.read(path, DataFrame)
     stat1 = @chain stat begin
         rename(GEMSMagTIP.standardize_var_suffix, _; cols=Cols(expr_matchstatvar))
