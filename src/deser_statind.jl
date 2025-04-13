@@ -41,7 +41,16 @@ struct StatInd_long
     varQuality::Float64
 end
 
+"""
+Matches "var_SE_EW".
+"""
 const expr_matchstatvar = r"\Avar\_"
+
+"""
+Matches "SE_EW" for "var_SE_EW".
+"""
+const expr_matchstatvarrest = r"(?<=\Avar\_).*"
+
 
 const prefix_var = "var"
 
@@ -112,12 +121,28 @@ function _statind_deser(T::StatInd, path)
     output = Serde.to_deser(Vector{T}, rows)
 end
 
+
+"""
+For transforming `:variable` to `:var_type` and `:var_comp`.
+
+# Example
+
+`transform(:variable => ByRow(v -> varstr2nt) => AsTable)`
+"""
+function varstr2nt(v)
+    sv = rsplit(v, "_", limit=2)
+    NamedTuple{(:var_type, :var_comp)}(sv)
+end
+
 function _statind_deser(T::StatInd_long, path)
     stat = CSV.read(path, DataFrame)
     stat1 = @chain stat begin
         rename(GEMSMagTIP.standardize_var_suffix, _; cols=Cols(expr_matchstatvar))
-        transform(AsTable(expr_matchstatvar) => ByRow(identity) => Symbol(prefix_var))
-        select(Not(expr_matchstatvar))
+        # stack on `var_...`
+        stack(Cols(expr_matchstatvar), [:DateTime, :stn, :prp])
+        # keep the rest (`...`) for `var_...`
+        transform(:variable => ByRow(v -> match(expr_matchstatvarrest, v).match); renamecols=false)
+        transform(:variable => ByRow(varstr2nt) => AsTable)
     end
     rows = stat1 |> CSV.rowtable
     output = Serde.to_deser(Vector{T}, rows)
