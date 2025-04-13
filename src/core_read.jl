@@ -14,13 +14,13 @@ core_read(fname::String, path) = core_read(Symbol(fname), path)
 core_read(fname::Symbol, path) = core_read(Val(fname), path) # then dispatch by Val(fname) to functions in other src file.
 
 
-read_data(path, sink; kwargs...) = core_read(path; kwargs...) |> sink
+read_data(path, sink) = core_read(path) |> sink
 
 # # SECTION: Establish link between `Val` of file and `Type` of data struct.
 
 core_read(::Val{file_fittingdegree}, path) = _vec_deser(FittingDegree, path)
 core_read(::Val{file_bestmodels}, path) = _vec_deser(BestModels, path)
-core_read(::Val{file_statind}, path; variant=StatInd) = _statind_deser(variant, path) # it's special
+core_read(::Val{file_statind}, path) = _statind_deser(StatInd, path) # it's special
 
 
 function _vec_deser(T, path)
