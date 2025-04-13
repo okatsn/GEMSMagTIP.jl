@@ -161,7 +161,7 @@ DateTime,stn,prp,var_S_NS,var_S_EW,var_K_NS,var_K_EW,var_SE_NS,var_SE_EW,varQual
 12-Jan-2014,CHCH,BP_35,1.07829085762279,-0.154353918670885,14.4540662741981,4.66344636793813,-5.85276811950442,-6.27160200259897,0.930127314814815,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN
 """
 
-@testset "CSV Statind" begin
+@testset "CSV Specialized case: Statind" begin
     mktempdir() do path
         file = joinpath(path, "StatInd.csv")
         write(file, csv_statind)
@@ -255,4 +255,12 @@ DateTime,stn,prp,var_S_NS,var_S_EW,var_K_NS,var_K_EW,var_SE_NS,var_SE_EW,varQual
             rename(GEMSMagTIP.standardize_var_suffix, df0; cols=Cols(GEMSMagTIP.expr_matchstatvar)),
             dfr)
     end
+end
+
+@testset "CSV Specialized case: Statind_long" begin
+
+end
+
+@testset "CSV general case (no additional preprocessing)" begin
+
 end
