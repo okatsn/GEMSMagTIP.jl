@@ -55,11 +55,15 @@ include("const_filename.jl")
 
 include("deser_info.jl")
 
+
+abstract type CSVRow end
+
+
 include("deser_bestmodel.jl")
 
 include("deser_fittingdegree.jl")
 
-using DataFrames
+using DataFrames, CSV
 
 include("deser_statind.jl")
 

@@ -1,4 +1,4 @@
-struct BestModels
+struct BestModels <: CSVRow
     Mc::Int64
     Rc::Int64
     NthrRatio::Float64
