@@ -155,3 +155,10 @@ end
 function Serde.deser(::Type{<:StatisticalIndex}, ::Type{Dates.Date}, data)
     return Dates.Date(data, info_date_format)
 end
+# KEYNOTE:
+# Conventionally, each field in `StatInd` fields should match the corresponding column in the csv to be imported, in a one-by-one manner.
+# In this case, one should define, for example `Serde.deser(::Type{::StatInd}, ::Type{Date}, data)`, that manipulate the `data` of type `Date` matched by the field name in struct found in the column of the CSV. Such as the column "DateTime" in CSV that was inferred from `StatInd.DateTime::Date` will going to be applied.
+#
+# However, in our case, the `StatInd.csv` data does not have a fixed columns, where values of variables are stores as `var_...` in columns, and the number of columns might changes.
+# In this case, we have no mean for `Serde.deser_csv` to work, because `StatInd.var::NamedTuple` is a summarized results from multiple columns rather than a specific column in CSV.
+# Since `Serde.deser_csv` calls `to_deser`, we call `to_deser` directly instead.
