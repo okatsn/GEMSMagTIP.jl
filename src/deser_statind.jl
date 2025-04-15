@@ -1,3 +1,5 @@
+abstract type StatisticalIndex <: CSVRow end
+
 """
 ```
 struct StatInd
@@ -22,7 +24,7 @@ To revert `df` the same columns as the csv `file`:
 end
 ```
 """
-struct StatInd <: CSVRow
+struct StatInd <: StatisticalIndex
     DateTime::Date
     stn::String
     prp::String
@@ -31,7 +33,7 @@ struct StatInd <: CSVRow
 end
 
 
-struct StatInd_long <: CSVRow
+struct StatInd_long <: StatisticalIndex
     DateTime::Date
     stn::String
     prp::String
@@ -150,6 +152,6 @@ function _vec_deser(T::Type{StatInd_long}, path)
     output = Serde.to_deser(Vector{T}, rows)
 end
 
-function Serde.deser(::Type{StatInd}, ::Type{Dates.Date}, data)
+function Serde.deser(::Type{<:StatisticalIndex}, ::Type{Dates.Date}, data)
     return Dates.Date(data, info_date_format)
 end
