@@ -258,9 +258,17 @@ DateTime,stn,prp,var_S_NS,var_S_EW,var_K_NS,var_K_EW,var_SE_NS,var_SE_EW,varQual
 end
 
 @testset "CSV Specialized case: Statind_long" begin
+    rawcsv = Serde.parse_csv(csv_statind) # named tuples
+    statind_long = GEMSMagTIP.process_before_deser(GEMSMagTIP.StatInd_long, rawcsv) |> DataFrame
+    statind_long_unstacked = unstack(statind_long, GEMSMagTIP.statind_stack_id, :variable, :value)
+    statind = @chain GEMSMagTIP.process_before_deser(GEMSMagTIP.StatInd, rawcsv) begin
+        DataFrame
+        transform(:var => identity => AsTable)
+        rename(x -> replace(x, "var_" => ""), _; cols=Cols(r"\Avar\_"))
+        select(Not(:varQuality, :var))
+    end
 
-end
-
-@testset "CSV general case (no additional preprocessing)" begin
-
+    sort!(statind, [:DateTime, :stn, :prp])
+    sort!(statind_long_unstacked, [:DateTime, :stn, :prp])
+    @test dataframes_equal(statind, statind_long_unstacked)
 end
