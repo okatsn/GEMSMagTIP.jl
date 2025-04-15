@@ -113,15 +113,15 @@ function standardize_var_suffix(s::AbstractString)
 end
 
 # Specialized data preprocessing.
-function _vec_deser(T::Type{StatInd}, path)
-    stat = CSV.read(path, DataFrame)
+function process_before_deser(T::Type{StatInd}, stat::CSV.File)
     stat1 = @chain stat begin
+        DataFrame
         rename(GEMSMagTIP.standardize_var_suffix, _; cols=Cols(expr_matchstatvar))
         transform(AsTable(expr_matchstatvar) => ByRow(identity) => Symbol(prefix_var))
         select(Not(expr_matchstatvar))
     end
     rows = stat1 |> CSV.rowtable
-    output = Serde.to_deser(Vector{T}, rows)
+    return rows
 end
 
 
@@ -137,10 +137,9 @@ function varstr2nt(v)
     NamedTuple{(:var_type, :var_comp)}(sv)
 end
 
-# Specialized data preprocessing.
-function _vec_deser(T::Type{StatInd_long}, path)
-    stat = CSV.read(path, DataFrame)
+function process_before_deser(T::Type{StatInd_long}, stat::CSV.File)
     stat1 = @chain stat begin
+        DataFrame
         rename(GEMSMagTIP.standardize_var_suffix, _; cols=Cols(expr_matchstatvar))
         # stack on `var_...`
         stack(Cols(expr_matchstatvar), [:DateTime, :stn, :prp])
@@ -149,7 +148,7 @@ function _vec_deser(T::Type{StatInd_long}, path)
         transform(:variable => ByRow(varstr2nt) => AsTable)
     end
     rows = stat1 |> CSV.rowtable
-    output = Serde.to_deser(Vector{T}, rows)
+    return rows
 end
 
 function Serde.deser(::Type{<:StatisticalIndex}, ::Type{Dates.Date}, data)
@@ -161,4 +160,4 @@ end
 #
 # However, in our case, the `StatInd.csv` data does not have a fixed columns, where values of variables are stores as `var_...` in columns, and the number of columns might changes.
 # In this case, we have no mean for `Serde.deser_csv` to work, because `StatInd.var::NamedTuple` is a summarized results from multiple columns rather than a specific column in CSV.
-# Since `Serde.deser_csv` calls `to_deser`, we call `to_deser` directly instead.
+# Since `Serde.deser_csv` calls `to_deser`, we call `to_deser` directly instead in `_vec_deser`.
