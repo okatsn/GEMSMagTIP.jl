@@ -158,5 +158,5 @@ end
 # In this case, one should define, for example `Serde.deser(::Type{::StatInd}, ::Type{Date}, data)`, that manipulate the `data` of type `Date` matched by the field name in struct found in the column of the CSV. Such as the column "DateTime" in CSV that was inferred from `StatInd.DateTime::Date` will going to be applied.
 #
 # However, in our case, the `StatInd.csv` data does not have a fixed columns, where values of variables are stores as `var_...` in columns, and the number of columns might changes.
-# In this case, we have no mean for `Serde.deser_csv` to work, because `StatInd.var::NamedTuple` is a summarized results from multiple columns rather than a specific column in CSV.
-# Since `Serde.deser_csv` calls `to_deser`, we call `to_deser` directly instead in `_vec_deser`.
+# In this case, we have no mean for `Serde.deser_csv` to work, because `StatInd.var::NamedTuple` is a summarized result from multiple columns rather than a specific column in CSV.
+# Since `Serde.deser_csv` calls `to_deser`, we call `to_deser` directly instead in `_vec_deser`, where `process_before_deser` is the function for split-apply-combine raw csv table to fit in `CSVRow` (e.g., `StatInd_long` and `StatInd`).
