@@ -45,9 +45,9 @@ function _vec_deser(T, path)
 end
 
 """
-Returns `CSV.rowtable` whose columns match fields in `T`.
+Internally called `_vec_deser`, and returns `CSV.rowtable` whose columns match fields in `T`.
 """
-function process_before_deser(T::Type{<:CSVRow}, f::CSV.File)
+function process_before_deser(T::Type{<:CSVRow}, f)
     rows = f |> CSV.rowtable
     return rows
 end # for any other types.

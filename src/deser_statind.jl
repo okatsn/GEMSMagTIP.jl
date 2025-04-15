@@ -113,7 +113,7 @@ function standardize_var_suffix(s::AbstractString)
 end
 
 # Specialized data preprocessing.
-function process_before_deser(T::Type{StatInd}, stat::CSV.File)
+function process_before_deser(T::Type{StatInd}, stat)
     stat1 = @chain stat begin
         DataFrame
         rename(GEMSMagTIP.standardize_var_suffix, _; cols=Cols(expr_matchstatvar))
@@ -137,12 +137,14 @@ function varstr2nt(v)
     NamedTuple{(:var_type, :var_comp)}(sv)
 end
 
-function process_before_deser(T::Type{StatInd_long}, stat::CSV.File)
+const statind_stack_id = [:DateTime, :stn, :prp]
+
+function process_before_deser(T::Type{StatInd_long}, stat)
     stat1 = @chain stat begin
         DataFrame
         rename(GEMSMagTIP.standardize_var_suffix, _; cols=Cols(expr_matchstatvar))
         # stack on `var_...`
-        stack(Cols(expr_matchstatvar), [:DateTime, :stn, :prp])
+        stack(Cols(expr_matchstatvar), statind_stack_id)
         # keep the rest (`...`) for `var_...`
         transform(:variable => ByRow(v -> match(expr_matchstatvarrest, v).match); renamecols=false)
         transform(:variable => ByRow(varstr2nt) => AsTable)
