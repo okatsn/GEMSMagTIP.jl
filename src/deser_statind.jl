@@ -5,10 +5,8 @@ abstract type StatisticalIndex <: CSVRow end
 struct StatInd
     DateTime::Date
     stn::String
-    ID::String
     prp::String
     var::NamedTuple
-    varQuality::Float64
 end
 ```
 
@@ -29,7 +27,6 @@ struct StatInd <: StatisticalIndex
     stn::String
     prp::String
     var::NamedTuple
-    varQuality::Float64
 end
 
 
@@ -40,7 +37,6 @@ struct StatInd_long <: StatisticalIndex
     variable::String
     var_type::String
     var_comp::String
-    varQuality::Float64
 end
 
 """
