@@ -35,6 +35,7 @@ struct StatInd_long <: StatisticalIndex
     stn::String
     prp::String
     variable::String
+    value::Float64
     var_type::String
     var_comp::String
 end
