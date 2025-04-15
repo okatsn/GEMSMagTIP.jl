@@ -13,9 +13,23 @@ end
 core_read(fname::String, path) = core_read(Symbol(fname), path)
 core_read(fname::Symbol, path) = core_read(Val(fname), path) # then dispatch by Val(fname) to functions in other src file.
 
+"""
+`read_data(path, DataFrame)` dispatch deserialization by file name. For example, if `basename(path)` is `$file_statind`, it returns the `DataFrame` with each row being `$(split(string(file_statind), ".")[1])`.
 
+In this case, it is equivalent as calling `read_data($(split(string(file_statind), ".")[1]), path, DataFrame)`.
+"""
 read_data(path, sink) = core_read(path) |> sink
 
+"""
+`read_data(T::Type{<:CSVRow}, path, sink)` deserialize data to type `T` for arbitrary file name, and finally returned as data of type `sink`.
+
+# Example
+
+```julia
+using GEMSMagTIP
+GEMSMagTIP.read_data(StatInd, "data.csv", DataFrame)
+```
+"""
 read_data(T::Type{<:CSVRow}, path, sink) = core_read(T, path) |> sink
 core_read(T, path) = _vec_deser(T, path)
 
