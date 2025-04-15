@@ -32,7 +32,7 @@ core_read(::Val{file_statind}, path) = _vec_deser(StatInd, path)
 # General case (no extra processing)
 function _vec_deser(T, path)
     data0 = CSV.File(path)
-    rows = data0 |> CSV.rowtable
+    rows = process_before_deser(T, data0)
     # # KEYNOTE: The following processing works, but superfluous because the final destination of `deser_csv` is `to_deser`, which already accepts rows.
     # csv0 = rows |> to_csv # Parse to a string of csv data
     # output = Serde.deser_csv(GEMSMagTIP.FittingDegree, csv0)
@@ -43,3 +43,11 @@ function _vec_deser(T, path)
     output = Serde.to_deser(Vector{T}, rows)
     # Output a vector of FittingDegree or etc.
 end
+
+"""
+Internally called `_vec_deser`, and returns `CSV.rowtable` whose columns match fields in `T`.
+"""
+function process_before_deser(T::Type{<:CSVRow}, f)
+    rows = f |> CSV.rowtable
+    return rows
+end # for any other types.
