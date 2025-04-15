@@ -13,19 +13,40 @@ end
 core_read(fname::String, path) = core_read(Symbol(fname), path)
 core_read(fname::Symbol, path) = core_read(Val(fname), path) # then dispatch by Val(fname) to functions in other src file.
 
+"""
+`read_data(path, DataFrame)` dispatch deserialization by file name. For example, if `basename(path)` is `$file_statind`, it returns the `DataFrame` with each row being `$(split(string(file_statind), ".")[1])`.
 
+In this case, it is equivalent as calling `read_data($(split(string(file_statind), ".")[1]), path, DataFrame)`.
+"""
 read_data(path, sink) = core_read(path) |> sink
+
+"""
+`read_data(T::Type{<:CSVRow}, path, sink)` deserialize data to type `T` for arbitrary file name, and finally returned as data of type `sink`.
+
+# Example
+
+```julia
+using GEMSMagTIP
+GEMSMagTIP.read_data(StatInd, "data.csv", DataFrame)
+```
+"""
+read_data(T::Type{<:CSVRow}, path, sink) = core_read(T, path) |> sink
+core_read(T, path) = _vec_deser(T, path)
 
 # # SECTION: Establish link between `Val` of file and `Type` of data struct.
 
+# Fall back to general cases.
 core_read(::Val{file_fittingdegree}, path) = _vec_deser(FittingDegree, path)
 core_read(::Val{file_bestmodels}, path) = _vec_deser(BestModels, path)
-core_read(::Val{file_statind}, path) = _statind_deser(StatInd, path) # it's special
+
+# Fall back to specialized cases. (See deser_statind.jl)
+core_read(::Val{file_statind}, path) = _vec_deser(StatInd, path)
 
 
+# General case (no extra processing)
 function _vec_deser(T, path)
     data0 = CSV.File(path)
-    rows = data0 |> CSV.rowtable
+    rows = process_before_deser(T, data0)
     # # KEYNOTE: The following processing works, but superfluous because the final destination of `deser_csv` is `to_deser`, which already accepts rows.
     # csv0 = rows |> to_csv # Parse to a string of csv data
     # output = Serde.deser_csv(GEMSMagTIP.FittingDegree, csv0)
@@ -36,3 +57,11 @@ function _vec_deser(T, path)
     output = Serde.to_deser(Vector{T}, rows)
     # Output a vector of FittingDegree or etc.
 end
+
+"""
+Internally called `_vec_deser`, and returns `CSV.rowtable` whose columns match fields in `T`.
+"""
+function process_before_deser(T::Type{<:CSVRow}, f)
+    rows = f |> CSV.rowtable
+    return rows
+end # for any other types.
