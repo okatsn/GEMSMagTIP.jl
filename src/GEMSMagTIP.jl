@@ -58,6 +58,14 @@ include("deser_info.jl")
 
 abstract type CSVRow end
 
+"""
+Configuration for `process_before_deser`.
+"""
+struct PreprocessConfig
+    datatype::Type{CSVRow}
+    config::NamedTuple
+end
+
 
 include("deser_bestmodel.jl")
 

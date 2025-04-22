@@ -268,3 +268,13 @@ end
     sort!(statind_long_unstacked, [:DateTime, :stn, :prp])
     @test dataframes_equal(statind, statind_long_unstacked)
 end
+
+using OkInformationalAnalysis
+
+@testset "Test Stat's Configuration interface" begin
+    rawcsv = Serde.parse_csv(csv_statind) # named tuples
+    config = (sep=se2sep, logfim=log10)
+    @test_throws MethodError statind_long = GEMSMagTIP.process_before_deser(GEMSMagTIP.StatInd_long, config, rawcsv) |> DataFrame
+    @test_throws MethodError statind = GEMSMagTIP.process_before_deser(GEMSMagTIP.StatInd, config, rawcsv) |> DataFrame
+
+end

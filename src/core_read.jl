@@ -65,3 +65,7 @@ function process_before_deser(T::Type{<:CSVRow}, f)
     rows = f |> CSV.rowtable
     return rows
 end # for any other types.
+
+function process_before_deser(pc::PreprocessConfig, f)
+    process_before_deser(pc.datatype, pc.config, f)
+end # for any other types.
