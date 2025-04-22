@@ -137,7 +137,29 @@ end
 
 const statind_stack_id = [:DateTime, :stn, :prp]
 
-tomatchvar(x) = Regex("$(prefix_var)_$x")
+"""
+A function that generates `Regex` for matching variable name with `$prefix_var` prefix but without suffix.
+
+# Example
+
+```jldoctest
+julia> match(GEMSMagTIP.tomatchvar("FI"), "var_FI_EW").match
+"var_FI"
+
+julia> match(GEMSMagTIP.tomatchvar("FI"), "var_FI").match
+"var_FI"
+
+julia> match(GEMSMagTIP.tomatchvar("FI"), "var_FIX") # should return nothing
+
+
+julia> match(GEMSMagTIP.tomatchvar("FI"), "Nevar_FI") # should return nothing
+
+
+```
+
+"""
+tomatchvar(x) = Regex("(?<=\\A)$(prefix_var)_$x(?=(\\Z|\\_))")
+
 const expr_matchvarse = tomatchvar("SE")
 const expr_matchvarfim = tomatchvar("FI")
 
