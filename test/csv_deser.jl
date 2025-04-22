@@ -273,8 +273,17 @@ using OkInformationalAnalysis
 
 @testset "Test Stat's Configuration interface" begin
     rawcsv = Serde.parse_csv(csv_statind) # named tuples
+    df0 = rawcsv |> DataFrame
     config = (sep=se2sep, logfim=log10)
     @test_throws MethodError statind_long = GEMSMagTIP.process_before_deser(GEMSMagTIP.StatInd_long, config, rawcsv) |> DataFrame
     @test_throws MethodError statind = GEMSMagTIP.process_before_deser(GEMSMagTIP.StatInd, config, rawcsv) |> DataFrame
 
+    @test all(in(Set([
+            "var_SE_NS",
+            "var_SE_EW",
+            "var_SE_x",
+            "var_SE_y",
+            "var_SE_z",
+            "var_SE",
+        ])), names(select(df0, GEMSMagTIP.expr_matchse)))
 end

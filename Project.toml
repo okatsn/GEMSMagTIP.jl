@@ -9,6 +9,7 @@ Chain = "8be319e6-bccf-4806-a6f7-6fae938471bc"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+OkInformationalAnalysis = "4e730273-489a-4dfd-9ca2-bebabcd3c278"
 Serde = "db9b398d-9517-45f8-9a95-92af99003e0e"
 StructEquality = "6ec83bb0-ed9f-11e9-3b4c-2b04cb4e219c"
 
@@ -17,6 +18,7 @@ CSV = "0.10"
 Chain = "0.5, 0.6"
 DataFrames = "1.5, 1.6, 1.7"
 JSON = "0.21"
+OkInformationalAnalysis = "0.0.1"
 Serde = "3.6"
 StructEquality = "2.1"
 julia = "1.10, 1.11"
@@ -24,8 +26,9 @@ julia = "1.10, 1.11"
 [extras]
 CompatHelperLocal = "5224ae11-6099-4aaa-941d-3aab004bd678"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
-OkTableTools = "42c3750f-3b15-406e-9cb1-f05d2df8c96f"
 OkInformationalAnalysis = "4e730273-489a-4dfd-9ca2-bebabcd3c278"
+OkTableTools = "42c3750f-3b15-406e-9cb1-f05d2df8c96f"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
 [targets]
 test = ["Test", "Documenter", "CompatHelperLocal", "OkTableTools", "OkInformationalAnalysis"]

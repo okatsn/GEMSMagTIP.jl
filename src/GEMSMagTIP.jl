@@ -72,7 +72,7 @@ include("deser_bestmodel.jl")
 include("deser_fittingdegree.jl")
 
 using DataFrames, CSV
-
+using OkInformationalAnalysis
 include("deser_statind.jl")
 
 
