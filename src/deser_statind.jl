@@ -201,7 +201,7 @@ function convertsep(df0)
     end
 end
 
-function process_before_deser(::Type{StatInd_long}, stat; sep=false, log10fim=false)
+function process_before_deser(::Type{StatInd_long}, stat; sep=false, logfim=false)
     stat1 = @chain stat begin
         DataFrame
         ifelse(sep, convertsep(_), identity(_))

@@ -62,7 +62,7 @@ abstract type CSVRow end
 Configuration for `process_before_deser`.
 """
 struct PreprocessConfig
-    datatype::Type{CSVRow}
+    datatype::Type{<:CSVRow}
     config::NamedTuple
 end
 
