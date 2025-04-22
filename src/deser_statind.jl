@@ -163,6 +163,30 @@ tomatchvar(x) = Regex("(?<=\\A)$(prefix_var)_$x(?=(\\Z|\\_))")
 const expr_matchvarse = tomatchvar("SE")
 const expr_matchvarfim = tomatchvar("FI")
 
+"""
+A function that generates `Regex` for matching variable name without `$prefix_var` prefix and suffix.
+
+# Example
+
+```jldoctest
+julia> match(GEMSMagTIP.tomatchvarcore("SE"), "var_SE_EW")
+"SE"
+
+julia> match(GEMSMagTIP.tomatchvarcore("SE"), "var_SE")
+"SE"
+
+julia> match(GEMSMagTIP.tomatchvarcore("SE"), "var_SEX")
+nothing
+
+julia> match(GEMSMagTIP.tomatchvarcore("SE"), "var_LOSE")
+nothing
+```
+"""
+tomatchvarcore(x) = Regex("(?<=\\A$(prefix_var)\\_)$x(?=\\Z|\\_)")
+
+
+const expr_matchse = tomatchvarcore("SE")
+
 function strse2sep(s)
     parse(Float64, s) |> se2sep
 end
