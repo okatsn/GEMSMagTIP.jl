@@ -169,17 +169,18 @@ A function that generates `Regex` for matching variable name without `$prefix_va
 # Example
 
 ```jldoctest
-julia> match(GEMSMagTIP.tomatchvarcore("SE"), "var_SE_EW")
+julia> match(GEMSMagTIP.tomatchvarcore("SE"), "var_SE_EW").match
 "SE"
 
-julia> match(GEMSMagTIP.tomatchvarcore("SE"), "var_SE")
+julia> match(GEMSMagTIP.tomatchvarcore("SE"), "var_SE").match
 "SE"
 
 julia> match(GEMSMagTIP.tomatchvarcore("SE"), "var_SEX")
-nothing
+
 
 julia> match(GEMSMagTIP.tomatchvarcore("SE"), "var_LOSE")
-nothing
+
+
 ```
 """
 tomatchvarcore(x) = Regex("(?<=\\A$(prefix_var)\\_)$x(?=\\Z|\\_)")
