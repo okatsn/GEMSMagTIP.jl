@@ -196,13 +196,15 @@ function convertsep(df0)
     @chain df0 begin
         # transform(Cols(expr_matchvarse) .=> ByRow(strse2sep) .=> (s -> replace(s,)))
         # CHECKPOINT: create and test expr_matchse and expr_matchfim  that matches "SE" and "FIM" in order to replace them by SEP (simple replace) and log10(FIM) (replace with @s_str)
-        select(expr_matchvarse)
+        transform(Cols(expr_matchse) .=> ByRow(strse2sep) .=> (s -> replace(s, expr_matchse => "SEP")))
+        select(Not(expr_matchse))
     end
 end
 
 function process_before_deser(::Type{StatInd_long}, stat; sep=false, log10fim=false)
     stat1 = @chain stat begin
         DataFrame
+        ifelse(sep, convertsep(_), identity(_))
         rename(standardize_var_suffix, _; cols=Cols(expr_matchstatvar))
         # stack on `var_...`
         stack(Cols(expr_matchstatvar), statind_stack_id)
