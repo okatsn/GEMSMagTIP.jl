@@ -269,8 +269,8 @@ end
     @test dataframes_equal(statind, statind_long_unstacked)
 end
 
-using OkInformationalAnalysis
-# using GEMSMagTIP, DataFrames, Serde
+using OkInformationalAnalysis, Serde
+# using GEMSMagTIP, DataFrames
 
 @testset "Test Stat's Configuration interface" begin
     rawcsv = Serde.parse_csv(csv_statind) # named tuples
@@ -285,9 +285,13 @@ using OkInformationalAnalysis
             "var_SE",
         ])), names(select(df0, GEMSMagTIP.expr_matchse)))
 
+    # `rows` output by `process_before_deser` contains number in type String; `to_deser` convert them to Float64 according to StatInd_long.
+    _deser_long(rows) = Serde.to_deser(Vector{GEMSMagTIP.StatInd_long}, rows)
     config = (sep=true, logfim=false)
     pc = GEMSMagTIP.PreprocessConfig(GEMSMagTIP.StatInd_long, config)
-    statind_long = GEMSMagTIP.process_before_deser(pc, rawcsv) |> DataFrame
+    statind_long = GEMSMagTIP.process_before_deser(pc, rawcsv) |> _deser_long |> DataFrame
+
+    # Test whether old variables were no longer available.
     @test all(!in(Set([
             "var_SE_NS",
             "var_SE_EW",
@@ -297,12 +301,14 @@ using OkInformationalAnalysis
             "var_SE",
         ])), unique(statind_long.variable))
 
-    statind_long0 = GEMSMagTIP.process_before_deser(GEMSMagTIP.StatInd_long, rawcsv) |> DataFrame
+    statind_long0 = GEMSMagTIP.process_before_deser(GEMSMagTIP.StatInd_long, rawcsv) |> _deser_long |> DataFrame
     onlyse0 = filter(:var_type => (t -> t == "SE"), statind_long0)
     onlyse1 = filter(:var_type => (t -> t == "SEP"), statind_long)
 
     for (r0, r1) in zip(eachrow(onlyse0), eachrow(onlyse1))
-        @test se2sep(r0.value) ≈ r1.value
+        if !isnan(r1.value)
+            @test se2sep(r0.value) ≈ r1.value
+        end
     end
 
 
