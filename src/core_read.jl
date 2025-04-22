@@ -21,7 +21,7 @@ In this case, it is equivalent as calling `read_data($(split(string(file_statind
 read_data(path, sink) = core_read(path) |> sink
 
 """
-`read_data(T::Type{<:CSVRow}, path, sink)` deserialize data to type `T` for arbitrary file name, and finally returned as data of type `sink`.
+`read_data(T::Union{Type{<:CSVRow},PreprocessConfig}, path, sink)` deserialize data to type `T` for arbitrary file name, and finally returned as data of type `sink`.
 
 # Example
 
@@ -30,7 +30,7 @@ using GEMSMagTIP
 GEMSMagTIP.read_data(StatInd, "data.csv", DataFrame)
 ```
 """
-read_data(T::Type{<:CSVRow}, path, sink) = core_read(T, path) |> sink
+read_data(T, path, sink) = core_read(T, path) |> sink
 core_read(T, path) = _vec_deser(T, path)
 
 # # SECTION: Establish link between `Val` of file and `Type` of data struct.
@@ -67,5 +67,5 @@ function process_before_deser(T::Type{<:CSVRow}, f)
 end # for any other types.
 
 function process_before_deser(pc::PreprocessConfig, f)
-    process_before_deser(pc.datatype, pc.config, f)
-end # for any other types.
+    process_before_deser(pc.datatype, f; pc.config...)
+end
