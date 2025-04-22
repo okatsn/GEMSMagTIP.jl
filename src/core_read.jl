@@ -1,3 +1,12 @@
+struct ProcessingConfig
+    optional_step::Bool
+    other_option::Any
+    # Add more options as needed
+end
+
+ProcessingConfig(; optional_step=false, other_option=nothing) =
+    ProcessingConfig(optional_step, other_option)
+
 """
 `core_read(path)` attempts to infer `T` for `Serde.to_deser(Vector{T}, ...)` for CSV deserialization based on
 the file name in `path`. See `GEMSMagTIP.file_` + [tab] for the supported file names.
@@ -18,7 +27,7 @@ core_read(fname::Symbol, path) = core_read(Val(fname), path) # then dispatch by 
 
 In this case, it is equivalent as calling `read_data($(split(string(file_statind), ".")[1]), path, DataFrame)`.
 """
-read_data(path, sink) = core_read(path) |> sink
+read_data(path, sink, config::ProcessingConfig=ProcessingConfig()) = core_read(path, config) |> sink
 
 """
 `read_data(T::Type{<:CSVRow}, path, sink)` deserialize data to type `T` for arbitrary file name, and finally returned as data of type `sink`.
@@ -44,7 +53,7 @@ core_read(::Val{file_statind}, path) = _vec_deser(StatInd, path)
 
 
 # General case (no extra processing)
-function _vec_deser(T, path)
+function _vec_deser(T, path, config)
     data0 = CSV.File(path)
     rows = process_before_deser(T, data0)
     # # KEYNOTE: The following processing works, but superfluous because the final destination of `deser_csv` is `to_deser`, which already accepts rows.
