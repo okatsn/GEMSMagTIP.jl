@@ -101,19 +101,20 @@ function standardize_var_suffix(s::AbstractString)
     sv = rsplit(s, "_", limit=2)
 
     if length(sv) == 1 ||
-       (first(sv) == prefix_var && length(sv) == 2) # Consider also the case like "var_S"
-        push!(sv, "")
+       (first(sv) == prefix_var && length(sv) == 2) # Consider the case of no suffix, such as "var_S"
+        push!(sv, "") # the empty string will be replaced by "full". See the dictionary `standard_code`.
     end
 
+    # Replace the last string segment according to the dictionary.
     sv[end] = standard_code[last(sv)]
     join(sv, "_")
 end
 
 # Specialized data preprocessing.
-function process_before_deser(T::Type{StatInd}, stat)
+function process_before_deser(::Type{StatInd}, stat)
     stat1 = @chain stat begin
         DataFrame
-        rename(GEMSMagTIP.standardize_var_suffix, _; cols=Cols(expr_matchstatvar))
+        rename(standardize_var_suffix, _; cols=Cols(expr_matchstatvar))
         transform(AsTable(expr_matchstatvar) => ByRow(identity) => Symbol(prefix_var))
         select(Not(expr_matchstatvar))
     end
@@ -136,10 +137,10 @@ end
 
 const statind_stack_id = [:DateTime, :stn, :prp]
 
-function process_before_deser(T::Type{StatInd_long}, stat)
+function process_before_deser(::Type{StatInd_long}, stat)
     stat1 = @chain stat begin
         DataFrame
-        rename(GEMSMagTIP.standardize_var_suffix, _; cols=Cols(expr_matchstatvar))
+        rename(standardize_var_suffix, _; cols=Cols(expr_matchstatvar))
         # stack on `var_...`
         stack(Cols(expr_matchstatvar), statind_stack_id)
         # keep the rest (`...`) for `var_...`
