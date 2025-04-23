@@ -54,9 +54,13 @@ function _vec_deser(T, path)
     # # KEYNOTEs:
     # - In #file:DeCsv.jl, `deser_csv` calls `parse_csv`, which parse the csv string to NamedTuples, and send the NamedTuples to `to_deser(Vector{T}, parse_csv(x))`.
     # - In #file:ParCsv.jl , you can see `parse_csv` basically calls `CSV.rowtable` and returns a vector of `NamedTuple`s.
-    output = Serde.to_deser(Vector{T}, rows)
+    output = Serde.to_deser(_create_vector_type(T), rows)
     # Output a vector of FittingDegree or etc.
 end
+
+_create_vector_type(T::DataType) = Vector{T}
+_create_vector_type(pc::PreprocessConfig) = Vector{pc.datatype}
+
 
 """
 Internally called `_vec_deser`, and returns `CSV.rowtable` whose columns match fields in `T`.
