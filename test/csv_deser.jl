@@ -287,7 +287,7 @@ using OkInformationalAnalysis, Serde
 
     # `rows` output by `process_before_deser` contains number in type String; `to_deser` convert them to Float64 according to StatInd_long.
     _deser_long(rows) = Serde.to_deser(Vector{GEMSMagTIP.StatInd_long}, rows)
-    config = (sep=true, logfim=false)
+    config = (sep=true, logfim=true)
     pc = GEMSMagTIP.PreprocessConfig(GEMSMagTIP.StatInd_long, config)
     statind_long = GEMSMagTIP.process_before_deser(pc, rawcsv) |> _deser_long |> DataFrame
 
@@ -299,15 +299,32 @@ using OkInformationalAnalysis, Serde
             "var_SE_y",
             "var_SE_z",
             "var_SE",
+            "var_FI_NS",
+            "var_FI_EW",
+            "var_FI_x",
+            "var_FI_y",
+            "var_FI_z",
+            "var_FI",
         ])), unique(statind_long.variable))
 
     statind_long0 = GEMSMagTIP.process_before_deser(GEMSMagTIP.StatInd_long, rawcsv) |> _deser_long |> DataFrame
     onlyse0 = filter(:var_type => (t -> t == "SE"), statind_long0)
     onlyse1 = filter(:var_type => (t -> t == "SEP"), statind_long)
 
+    @test nrow(onlyse0) == nrow(onlyse1)
     for (r0, r1) in zip(eachrow(onlyse0), eachrow(onlyse1))
         if !isnan(r1.value)
             @test se2sep(r0.value) ≈ r1.value
+        end
+    end
+
+    onlyfi0 = filter(:var_type => (t -> t == "FI"), statind_long0)
+    onlyfi1 = filter(:var_type => (t -> t == "log₁₀(FI)"), statind_long)
+
+    @test nrow(onlyfi0) == nrow(onlyfi1)
+    for (r0, r1) in zip(eachrow(onlyfi0), eachrow(onlyfi1))
+        if !isnan(r1.value)
+            @test log10(r0.value) ≈ r1.value
         end
     end
 
