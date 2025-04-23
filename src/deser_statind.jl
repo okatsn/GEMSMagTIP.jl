@@ -182,6 +182,17 @@ julia> match(GEMSMagTIP.tomatchvarcore("SE"), "var_LOSE")
 
 
 ```
+
+The matched target is always in the first captured group:
+
+```jldoctest
+julia> match(GEMSMagTIP.tomatchvarcore("FI"), "var_FI_EW")
+RegexMatch("FI", 1="FI")
+
+julia> replace("var_FI_EW", GEMSMagTIP.tomatchvarcore("FI") => s"log(\\1)")
+"var_log(FI)_EW"
+
+```
 """
 tomatchvarcore(x) = Regex("(?<=\\A$(prefix_var)\\_)($x)(?=\\Z|\\_)")
 
@@ -212,9 +223,11 @@ function convertlogfim(df0)
     @chain df0 begin
         # transform(Cols(expr_matchvarse) .=> ByRow(strse2sep) .=> (s -> replace(s,)))
         # CHECKPOINT: create and test expr_matchse and expr_matchfim  that matches "SE" and "FIM" in order to replace them by SEP (simple replace) and log10(FIM) (replace with @s_str)
-        transform(Cols(expr_matchfi) .=>
-            ByRow(strfi2logfi) .=>
-                (s -> replace(s, expr_matchfi => SubstitutionString("$(strfi2logfi())(\1)")))
+        transform(
+            Cols(expr_matchfi) .=>
+                ByRow(strfi2logfi) .=>
+                    (s -> replace(s, expr_matchfi => SubstitutionString("$(strfi2logfi())(\\1)")))
+            # substitute the matched `(FI)` with s"log₁₀(\1)" that results "log₁₀(FI)"
         )
         select(Not(expr_matchfi))
     end
@@ -224,7 +237,7 @@ function process_before_deser(::Type{StatInd_long}, stat; sep=false, logfim=fals
     stat1 = @chain stat begin
         DataFrame
         ifelse(sep, convertsep(_), identity(_))
-        ifelse(logfim, convertsep(_), identity(_))
+        ifelse(logfim, convertlogfim(_), identity(_))
         rename(standardize_var_suffix, _; cols=Cols(expr_matchstatvar))
         # stack on `var_...`
         stack(Cols(expr_matchstatvar), statind_stack_id)
