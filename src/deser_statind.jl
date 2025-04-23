@@ -200,9 +200,9 @@ tomatchvarcore(x) = Regex("(?<=\\A$(prefix_var)\\_)($x)(?=\\Z|\\_)")
 const expr_matchse = tomatchvarcore("SE")
 const expr_matchfi = tomatchvarcore("FI")
 
-strse2sep(s::String) = parse(Float64, s) |> strse2sep
-strse2sep(s) = s |> se2sep
-strse2sep() = "SEP"
+convert_se2logsep(s::String) = parse(Float64, s) |> convert_se2logsep
+convert_se2logsep(v) = se2sep(v) |> log10
+convert_se2logsep() = (to_replace=SubstitutionString("log₁₀(\\1P)"),)
 
 strfi2logfi(s::String) = parse(Float64, s) |> strfi2logfi
 strfi2logfi(s) = s |> log10
@@ -210,16 +210,16 @@ strfi2logfi() = "log₁₀"
 
 function convertsep(df0)
     @chain df0 begin
-        # transform(Cols(expr_matchvarse) .=> ByRow(strse2sep) .=> (s -> replace(s,)))
+        # transform(Cols(expr_matchvarse) .=> ByRow(convert_se2logsep) .=> (s -> replace(s,)))
         # CHECKPOINT: create and test expr_matchse and expr_matchfi  that matches "SE" and "FI" in order to replace them by SEP (simple replace) and log10(FI) (replace with @s_str)
-        transform(Cols(expr_matchse) .=> ByRow(strse2sep) .=> (s -> replace(s, expr_matchse => strse2sep())))
+        transform(Cols(expr_matchse) .=> ByRow(convert_se2logsep) .=> (s -> replace(s, expr_matchse => convert_se2logsep().to_replace)))
         select(Not(expr_matchse))
     end
 end
 
 function convertlogfi(df0)
     @chain df0 begin
-        # transform(Cols(expr_matchvarse) .=> ByRow(strse2sep) .=> (s -> replace(s,)))
+        # transform(Cols(expr_matchvarse) .=> ByRow(convert_se2logsep) .=> (s -> replace(s,)))
         # CHECKPOINT: create and test expr_matchse and expr_matchfi  that matches "SE" and "FI" in order to replace them by SEP (simple replace) and log10(FI) (replace with @s_str)
         transform(
             Cols(expr_matchfi) .=>
@@ -231,10 +231,10 @@ function convertlogfi(df0)
     end
 end
 
-function process_before_deser(::Type{StatInd_long}, stat; sep=false, logfi=false)
+function process_before_deser(::Type{StatInd_long}, stat; logsep=false, logfi=false)
     stat1 = @chain stat begin
         DataFrame
-        ifelse(sep, convertsep(_), identity(_))
+        ifelse(logsep, convertsep(_), identity(_))
         ifelse(logfi, convertlogfi(_), identity(_))
         rename(standardize_var_suffix, _; cols=Cols(expr_matchstatvar))
         # stack on `var_...`

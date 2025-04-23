@@ -295,7 +295,7 @@ using OkInformationalAnalysis, Serde
 
     # `rows` output by `process_before_deser` contains number in type String; `to_deser` convert them to Float64 according to StatInd_long.
     _deser_long(rows) = Serde.to_deser(Vector{GEMSMagTIP.StatInd_long}, rows)
-    config = (sep=true, logfi=true)
+    config = (logsep=true, logfi=true)
     pc = GEMSMagTIP.PreprocessConfig(GEMSMagTIP.StatInd_long, config)
     statind_long = GEMSMagTIP.process_before_deser(pc, rawcsv) |> _deser_long |> DataFrame
 
@@ -317,14 +317,14 @@ using OkInformationalAnalysis, Serde
 
     statind_long0 = GEMSMagTIP.process_before_deser(GEMSMagTIP.StatInd_long, rawcsv) |> _deser_long |> DataFrame
     onlyse0 = filter(:var_type => (t -> t == "SE"), statind_long0)
-    onlyse1 = filter(:var_type => (t -> t == "SEP"), statind_long)
+    onlyse1 = filter(:var_type => (t -> t == "log₁₀(SEP)"), statind_long)
 
     let test_count = 0
 
         @test nrow(onlyse0) == nrow(onlyse1)
         for (r0, r1) in zip(eachrow(onlyse0), eachrow(onlyse1))
             if !isnan(r1.value)
-                @test se2sep(r0.value) ≈ r1.value
+                @test log10(se2sep(r0.value)) ≈ r1.value
                 test_count += 1
             end
         end
@@ -358,7 +358,7 @@ end
         # df0 is the raw CSV read directly into a DataFrame.
         df0 = CSV.read(file, DataFrame)
         # df is the processed DataFrame from GEMSMagTIP.read_data
-        config = (sep=true, logfi=true)
+        config = (logsep=true, logfi=true)
         df1 = GEMSMagTIP.read_data(
             GEMSMagTIP.PreprocessConfig(GEMSMagTIP.StatInd_long, config),
             file,
