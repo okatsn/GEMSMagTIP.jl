@@ -200,14 +200,12 @@ tomatchvarcore(x) = Regex("(?<=\\A$(prefix_var)\\_)($x)(?=\\Z|\\_)")
 const expr_matchse = tomatchvarcore("SE")
 const expr_matchfi = tomatchvarcore("FI")
 
-function strse2sep(s)
-    parse(Float64, s) |> se2sep
-end
+strse2sep(s::String) = parse(Float64, s) |> strse2sep
+strse2sep(s) = s |> se2sep
 strse2sep() = "SEP"
 
-function strfi2logfi(s)
-    parse(Float64, s) |> log10
-end
+strfi2logfi(s::String) = parse(Float64, s) |> strfi2logfi
+strfi2logfi(s) = s |> log10
 strfi2logfi() = "log₁₀"
 
 function convertsep(df0)
