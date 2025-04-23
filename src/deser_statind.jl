@@ -161,7 +161,7 @@ julia> match(GEMSMagTIP.tomatchvar("FI"), "Nevar_FI") # should return nothing
 tomatchvar(x) = Regex("(?<=\\A)$(prefix_var)_$x(?=(\\Z|\\_))")
 
 const expr_matchvarse = tomatchvar("SE")
-const expr_matchvarfim = tomatchvar("FI")
+const expr_matchvarfi = tomatchvar("FI")
 
 """
 A function that generates `Regex` for matching variable name without `$prefix_var` prefix and suffix.
@@ -213,16 +213,16 @@ strfi2logfi() = "log₁₀"
 function convertsep(df0)
     @chain df0 begin
         # transform(Cols(expr_matchvarse) .=> ByRow(strse2sep) .=> (s -> replace(s,)))
-        # CHECKPOINT: create and test expr_matchse and expr_matchfim  that matches "SE" and "FIM" in order to replace them by SEP (simple replace) and log10(FIM) (replace with @s_str)
+        # CHECKPOINT: create and test expr_matchse and expr_matchfi  that matches "SE" and "FI" in order to replace them by SEP (simple replace) and log10(FI) (replace with @s_str)
         transform(Cols(expr_matchse) .=> ByRow(strse2sep) .=> (s -> replace(s, expr_matchse => strse2sep())))
         select(Not(expr_matchse))
     end
 end
 
-function convertlogfim(df0)
+function convertlogfi(df0)
     @chain df0 begin
         # transform(Cols(expr_matchvarse) .=> ByRow(strse2sep) .=> (s -> replace(s,)))
-        # CHECKPOINT: create and test expr_matchse and expr_matchfim  that matches "SE" and "FIM" in order to replace them by SEP (simple replace) and log10(FIM) (replace with @s_str)
+        # CHECKPOINT: create and test expr_matchse and expr_matchfi  that matches "SE" and "FI" in order to replace them by SEP (simple replace) and log10(FI) (replace with @s_str)
         transform(
             Cols(expr_matchfi) .=>
                 ByRow(strfi2logfi) .=>
@@ -233,11 +233,11 @@ function convertlogfim(df0)
     end
 end
 
-function process_before_deser(::Type{StatInd_long}, stat; sep=false, logfim=false)
+function process_before_deser(::Type{StatInd_long}, stat; sep=false, logfi=false)
     stat1 = @chain stat begin
         DataFrame
         ifelse(sep, convertsep(_), identity(_))
-        ifelse(logfim, convertlogfim(_), identity(_))
+        ifelse(logfi, convertlogfi(_), identity(_))
         rename(standardize_var_suffix, _; cols=Cols(expr_matchstatvar))
         # stack on `var_...`
         stack(Cols(expr_matchstatvar), statind_stack_id)

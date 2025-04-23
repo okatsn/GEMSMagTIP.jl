@@ -295,7 +295,7 @@ using OkInformationalAnalysis, Serde
 
     # `rows` output by `process_before_deser` contains number in type String; `to_deser` convert them to Float64 according to StatInd_long.
     _deser_long(rows) = Serde.to_deser(Vector{GEMSMagTIP.StatInd_long}, rows)
-    config = (sep=true, logfim=true)
+    config = (sep=true, logfi=true)
     pc = GEMSMagTIP.PreprocessConfig(GEMSMagTIP.StatInd_long, config)
     statind_long = GEMSMagTIP.process_before_deser(pc, rawcsv) |> _deser_long |> DataFrame
 
