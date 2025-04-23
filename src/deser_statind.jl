@@ -137,9 +137,56 @@ end
 
 const statind_stack_id = [:DateTime, :stn, :prp]
 
-tomatchvar(x) = Regex("$(prefix_var)_$x")
+"""
+A function that generates `Regex` for matching variable name with `$prefix_var` prefix but without suffix.
+
+# Example
+
+```jldoctest
+julia> match(GEMSMagTIP.tomatchvar("FI"), "var_FI_EW").match
+"var_FI"
+
+julia> match(GEMSMagTIP.tomatchvar("FI"), "var_FI").match
+"var_FI"
+
+julia> match(GEMSMagTIP.tomatchvar("FI"), "var_FIX") # should return nothing
+
+
+julia> match(GEMSMagTIP.tomatchvar("FI"), "Nevar_FI") # should return nothing
+
+
+```
+
+"""
+tomatchvar(x) = Regex("(?<=\\A)$(prefix_var)_$x(?=(\\Z|\\_))")
+
 const expr_matchvarse = tomatchvar("SE")
 const expr_matchvarfim = tomatchvar("FI")
+
+"""
+A function that generates `Regex` for matching variable name without `$prefix_var` prefix and suffix.
+
+# Example
+
+```jldoctest
+julia> match(GEMSMagTIP.tomatchvarcore("SE"), "var_SE_EW").match
+"SE"
+
+julia> match(GEMSMagTIP.tomatchvarcore("SE"), "var_SE").match
+"SE"
+
+julia> match(GEMSMagTIP.tomatchvarcore("SE"), "var_SEX")
+
+
+julia> match(GEMSMagTIP.tomatchvarcore("SE"), "var_LOSE")
+
+
+```
+"""
+tomatchvarcore(x) = Regex("(?<=\\A$(prefix_var)\\_)$x(?=\\Z|\\_)")
+
+
+const expr_matchse = tomatchvarcore("SE")
 
 function strse2sep(s)
     parse(Float64, s) |> se2sep
@@ -149,13 +196,15 @@ function convertsep(df0)
     @chain df0 begin
         # transform(Cols(expr_matchvarse) .=> ByRow(strse2sep) .=> (s -> replace(s,)))
         # CHECKPOINT: create and test expr_matchse and expr_matchfim  that matches "SE" and "FIM" in order to replace them by SEP (simple replace) and log10(FIM) (replace with @s_str)
-        select(expr_matchvarse)
+        transform(Cols(expr_matchse) .=> ByRow(strse2sep) .=> (s -> replace(s, expr_matchse => "SEP")))
+        select(Not(expr_matchse))
     end
 end
 
-function process_before_deser(::Type{StatInd_long}, stat; sep=false, log10fim=false)
+function process_before_deser(::Type{StatInd_long}, stat; sep=false, logfim=false)
     stat1 = @chain stat begin
         DataFrame
+        ifelse(sep, convertsep(_), identity(_))
         rename(standardize_var_suffix, _; cols=Cols(expr_matchstatvar))
         # stack on `var_...`
         stack(Cols(expr_matchstatvar), statind_stack_id)
