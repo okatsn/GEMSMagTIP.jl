@@ -349,3 +349,20 @@ using OkInformationalAnalysis, Serde
     end
 
 end
+
+@testset "Test `read_data` interface" begin
+    mktempdir() do path
+        file = joinpath(path, "StatInd.csv")
+        write(file, csv_statind)
+
+        # df0 is the raw CSV read directly into a DataFrame.
+        df0 = CSV.read(file, DataFrame)
+        # df is the processed DataFrame from GEMSMagTIP.read_data
+        config = (sep=true, logfi=true)
+        df1 = GEMSMagTIP.read_data(
+            GEMSMagTIP.PreprocessConfig(GEMSMagTIP.StatInd_long, config),
+            file,
+            DataFrame)
+
+    end
+end
