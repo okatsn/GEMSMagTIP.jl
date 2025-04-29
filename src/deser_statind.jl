@@ -204,23 +204,25 @@ convert_se2logsep(s::String) = parse(Float64, s) |> convert_se2logsep
 convert_se2logsep(v) = se2sep(v) |> log10
 convert_se2logsep() = (to_replace=SubstitutionString("log₁₀(\\1P)"),)
 
+convert_se2sep(s::String) = parse(Float64, s) |> convert_se2sep
+convert_se2sep(v) = se2sep(v)
+convert_se2sep() = (to_replace=SubstitutionString("\\1P"),)
+
 strfi2logfi(s::String) = parse(Float64, s) |> strfi2logfi
 strfi2logfi(s) = s |> log10
 strfi2logfi() = "log₁₀"
 
-function convertsep(df0)
+function convertsep(df0, fn)
     @chain df0 begin
         # transform(Cols(expr_matchvarse) .=> ByRow(convert_se2logsep) .=> (s -> replace(s,)))
         # CHECKPOINT: create and test expr_matchse and expr_matchfi  that matches "SE" and "FI" in order to replace them by SEP (simple replace) and log10(FI) (replace with @s_str)
-        transform(Cols(expr_matchse) .=> ByRow(convert_se2logsep) .=> (s -> replace(s, expr_matchse => convert_se2logsep().to_replace)))
+        transform(Cols(expr_matchse) .=> ByRow(fn) .=> (s -> replace(s, expr_matchse => fn().to_replace)))
         select(Not(expr_matchse))
     end
 end
 
 function convertlogfi(df0)
     @chain df0 begin
-        # transform(Cols(expr_matchvarse) .=> ByRow(convert_se2logsep) .=> (s -> replace(s,)))
-        # CHECKPOINT: create and test expr_matchse and expr_matchfi  that matches "SE" and "FI" in order to replace them by SEP (simple replace) and log10(FI) (replace with @s_str)
         transform(
             Cols(expr_matchfi) .=>
                 ByRow(strfi2logfi) .=>
@@ -231,11 +233,21 @@ function convertlogfi(df0)
     end
 end
 
-function process_before_deser(::Type{StatInd_long}, stat; logsep=false, logfi=false)
+function process_before_deser(::Type{StatInd_long}, stat; calc_logsep=false, calc_sep=false, calc_logfi=false)
+    do_sep = false
+    fn = convert_se2sep  # Initialize fn at function scope
+
+    if calc_logsep || calc_sep
+        do_sep = true
+        if calc_logsep
+            fn = convert_se2logsep
+        end
+    end
+
     stat1 = @chain stat begin
         DataFrame
-        ifelse(logsep, convertsep(_), identity(_))
-        ifelse(logfi, convertlogfi(_), identity(_))
+        ifelse(do_sep, convertsep(_, fn), identity(_))
+        ifelse(calc_logfi, convertlogfi(_), identity(_))
         rename(standardize_var_suffix, _; cols=Cols(expr_matchstatvar))
         # stack on `var_...`
         stack(Cols(expr_matchstatvar), statind_stack_id)
