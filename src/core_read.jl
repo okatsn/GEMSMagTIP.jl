@@ -1,11 +1,3 @@
-struct ProcessingConfig
-    optional_step::Bool
-    other_option::Any
-    # Add more options as needed
-end
-
-ProcessingConfig(; optional_step=false, other_option=nothing) =
-    ProcessingConfig(optional_step, other_option)
 
 """
 `core_read(path)` attempts to infer `T` for `Serde.to_deser(Vector{T}, ...)` for CSV deserialization based on
