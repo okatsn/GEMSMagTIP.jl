@@ -1,7 +1,7 @@
 name = "GEMSMagTIP"
 uuid = "2efd5ccf-8713-4cce-9981-56ece9225c34"
 authors = ["okatsn <okatsn@gmail.com> and contributors"]
-version = "0.3.0"
+version = "0.4.0"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
@@ -26,9 +26,8 @@ julia = "1.10, 1.11"
 [extras]
 CompatHelperLocal = "5224ae11-6099-4aaa-941d-3aab004bd678"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
-OkInformationalAnalysis = "4e730273-489a-4dfd-9ca2-bebabcd3c278"
 OkTableTools = "42c3750f-3b15-406e-9cb1-f05d2df8c96f"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test", "Documenter", "CompatHelperLocal", "OkTableTools", "OkInformationalAnalysis"]
+test = ["Test", "Documenter", "CompatHelperLocal", "OkTableTools"]
