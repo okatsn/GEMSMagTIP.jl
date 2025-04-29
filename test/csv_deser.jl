@@ -295,34 +295,40 @@ using OkInformationalAnalysis, Serde
 
     # `rows` output by `process_before_deser` contains number in type String; `to_deser` convert them to Float64 according to StatInd_long.
     _deser_long(rows) = Serde.to_deser(Vector{GEMSMagTIP.StatInd_long}, rows)
-    config = (calc_logsep=true, calc_logfi=true)
-    pc = GEMSMagTIP.PreprocessConfig(GEMSMagTIP.StatInd_long, config)
-    statind_long = GEMSMagTIP.process_before_deser(pc, rawcsv) |> _deser_long |> DataFrame
+    config1 = (calc_logsep=true, calc_logfi=true)
+    pc1 = GEMSMagTIP.PreprocessConfig(GEMSMagTIP.StatInd_long, config1)
+    config2 = (calc_sep=true, calc_logfi=true)
+    pc2 = GEMSMagTIP.PreprocessConfig(GEMSMagTIP.StatInd_long, config2)
+    statind_long_a = GEMSMagTIP.process_before_deser(pc1, rawcsv) |> _deser_long |> DataFrame
+    statind_long_b = GEMSMagTIP.process_before_deser(pc2, rawcsv) |> _deser_long |> DataFrame
 
     # Test whether old variables were no longer available.
-    @test all(!in(Set([
-            "var_SE_NS",
-            "var_SE_EW",
-            "var_SE_x",
-            "var_SE_y",
-            "var_SE_z",
-            "var_SE",
-            "var_FI_NS",
-            "var_FI_EW",
-            "var_FI_x",
-            "var_FI_y",
-            "var_FI_z",
-            "var_FI",
-        ])), unique(statind_long.variable))
+    old_var_names = Set([
+        "var_SE_NS",
+        "var_SE_EW",
+        "var_SE_x",
+        "var_SE_y",
+        "var_SE_z",
+        "var_SE",
+        "var_FI_NS",
+        "var_FI_EW",
+        "var_FI_x",
+        "var_FI_y",
+        "var_FI_z",
+        "var_FI",
+    ])
+    @test all(!in(old_var_names), unique(statind_long_a.variable))
+    @test all(!in(old_var_names), unique(statind_long_b.variable))
 
     statind_long0 = GEMSMagTIP.process_before_deser(GEMSMagTIP.StatInd_long, rawcsv) |> _deser_long |> DataFrame
     onlyse0 = filter(:var_type => (t -> t == "SE"), statind_long0)
-    onlyse1 = filter(:var_type => (t -> t == "log₁₀(SEP)"), statind_long)
+    onlyse1a = filter(:var_type => (t -> t == "log₁₀(SEP)"), statind_long_a)
+    onlyse1b = filter(:var_type => (t -> t == "SEP"), statind_long_b)
 
     let test_count = 0
 
-        @test nrow(onlyse0) == nrow(onlyse1)
-        for (r0, r1) in zip(eachrow(onlyse0), eachrow(onlyse1))
+        @test nrow(onlyse0) == nrow(onlyse1a)
+        for (r0, r1) in zip(eachrow(onlyse0), eachrow(onlyse1a))
             if !isnan(r1.value)
                 @test log10(se2sep(r0.value)) ≈ r1.value
                 test_count += 1
@@ -333,8 +339,21 @@ using OkInformationalAnalysis, Serde
     end
 
     let test_count = 0
+
+        @test nrow(onlyse0) == nrow(onlyse1b)
+        for (r0, r1) in zip(eachrow(onlyse0), eachrow(onlyse1b))
+            if !isnan(r1.value)
+                @test se2sep(r0.value) ≈ r1.value
+                test_count += 1
+            end
+        end
+
+        @test test_count > 0 # make sure the for-loop tests not zero
+    end
+
+    let test_count = 0
         onlyfi0 = filter(:var_type => (t -> t == "FI"), statind_long0)
-        onlyfi1 = filter(:var_type => (t -> t == "log₁₀(FI)"), statind_long)
+        onlyfi1 = filter(:var_type => (t -> t == "log₁₀(FI)"), statind_long_a)
 
         @test nrow(onlyfi0) > 0
         @test nrow(onlyfi0) == nrow(onlyfi1)
