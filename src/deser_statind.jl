@@ -137,9 +137,105 @@ end
 
 const statind_stack_id = [:DateTime, :stn, :prp]
 
-function process_before_deser(::Type{StatInd_long}, stat)
+"""
+A function that generates `Regex` for matching variable name with `$prefix_var` prefix but without suffix.
+
+# Example
+
+```jldoctest
+julia> match(GEMSMagTIP.tomatchvar("FI"), "var_FI_EW").match
+"var_FI"
+
+julia> match(GEMSMagTIP.tomatchvar("FI"), "var_FI").match
+"var_FI"
+
+julia> match(GEMSMagTIP.tomatchvar("FI"), "var_FIX") # should return nothing
+
+
+julia> match(GEMSMagTIP.tomatchvar("FI"), "Nevar_FI") # should return nothing
+
+
+```
+
+"""
+tomatchvar(x) = Regex("(?<=\\A)$(prefix_var)_$x(?=(\\Z|\\_))")
+
+const expr_matchvarse = tomatchvar("SE")
+const expr_matchvarfi = tomatchvar("FI")
+
+"""
+A function that generates `Regex` for matching variable name without `$prefix_var` prefix and suffix.
+
+# Example
+
+```jldoctest
+julia> match(GEMSMagTIP.tomatchvarcore("SE"), "var_SE_EW").match
+"SE"
+
+julia> match(GEMSMagTIP.tomatchvarcore("SE"), "var_SE").match
+"SE"
+
+julia> match(GEMSMagTIP.tomatchvarcore("SE"), "var_SEX")
+
+
+julia> match(GEMSMagTIP.tomatchvarcore("SE"), "var_LOSE")
+
+
+```
+
+The matched target is always in the first captured group:
+
+```jldoctest
+julia> match(GEMSMagTIP.tomatchvarcore("FI"), "var_FI_EW")
+RegexMatch("FI", 1="FI")
+
+julia> replace("var_FI_EW", GEMSMagTIP.tomatchvarcore("FI") => s"log(\\1)")
+"var_log(FI)_EW"
+
+```
+"""
+tomatchvarcore(x) = Regex("(?<=\\A$(prefix_var)\\_)($x)(?=\\Z|\\_)")
+
+
+const expr_matchse = tomatchvarcore("SE")
+const expr_matchfi = tomatchvarcore("FI")
+
+convert_se2logsep(s::String) = parse(Float64, s) |> convert_se2logsep
+convert_se2logsep(v) = se2sep(v) |> log10
+convert_se2logsep() = (to_replace=SubstitutionString("log₁₀(\\1P)"),)
+
+strfi2logfi(s::String) = parse(Float64, s) |> strfi2logfi
+strfi2logfi(s) = s |> log10
+strfi2logfi() = "log₁₀"
+
+function convertsep(df0)
+    @chain df0 begin
+        # transform(Cols(expr_matchvarse) .=> ByRow(convert_se2logsep) .=> (s -> replace(s,)))
+        # CHECKPOINT: create and test expr_matchse and expr_matchfi  that matches "SE" and "FI" in order to replace them by SEP (simple replace) and log10(FI) (replace with @s_str)
+        transform(Cols(expr_matchse) .=> ByRow(convert_se2logsep) .=> (s -> replace(s, expr_matchse => convert_se2logsep().to_replace)))
+        select(Not(expr_matchse))
+    end
+end
+
+function convertlogfi(df0)
+    @chain df0 begin
+        # transform(Cols(expr_matchvarse) .=> ByRow(convert_se2logsep) .=> (s -> replace(s,)))
+        # CHECKPOINT: create and test expr_matchse and expr_matchfi  that matches "SE" and "FI" in order to replace them by SEP (simple replace) and log10(FI) (replace with @s_str)
+        transform(
+            Cols(expr_matchfi) .=>
+                ByRow(strfi2logfi) .=>
+                    (s -> replace(s, expr_matchfi => SubstitutionString("$(strfi2logfi())(\\1)")))
+            # substitute the matched `(FI)` with s"log₁₀(\1)" that results "log₁₀(FI)"
+        )
+        select(Not(expr_matchfi))
+    end
+end
+
+function process_before_deser(::Type{StatInd_long}, stat; logsep=false, logfi=false)
     stat1 = @chain stat begin
         DataFrame
+        ifelse(logsep, convertsep(_), identity(_))
+        ifelse(logfi, convertlogfi(_), identity(_))
         rename(standardize_var_suffix, _; cols=Cols(expr_matchstatvar))
         # stack on `var_...`
         stack(Cols(expr_matchstatvar), statind_stack_id)

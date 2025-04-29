@@ -30,7 +30,7 @@ In this case, it is equivalent as calling `read_data($(split(string(file_statind
 read_data(path, sink, config::ProcessingConfig=ProcessingConfig()) = core_read(path, config) |> sink
 
 """
-`read_data(T::Type{<:CSVRow}, path, sink)` deserialize data to type `T` for arbitrary file name, and finally returned as data of type `sink`.
+`read_data(T::Union{Type{<:CSVRow},PreprocessConfig}, path, sink)` deserialize data to type `T` for arbitrary file name, and finally returned as data of type `sink`.
 
 # Example
 
@@ -39,7 +39,7 @@ using GEMSMagTIP
 GEMSMagTIP.read_data(StatInd, "data.csv", DataFrame)
 ```
 """
-read_data(T::Type{<:CSVRow}, path, sink) = core_read(T, path) |> sink
+read_data(T, path, sink) = core_read(T, path) |> sink
 core_read(T, path) = _vec_deser(T, path)
 
 # # SECTION: Establish link between `Val` of file and `Type` of data struct.
@@ -63,9 +63,13 @@ function _vec_deser(T, path, config)
     # # KEYNOTEs:
     # - In #file:DeCsv.jl, `deser_csv` calls `parse_csv`, which parse the csv string to NamedTuples, and send the NamedTuples to `to_deser(Vector{T}, parse_csv(x))`.
     # - In #file:ParCsv.jl , you can see `parse_csv` basically calls `CSV.rowtable` and returns a vector of `NamedTuple`s.
-    output = Serde.to_deser(Vector{T}, rows)
+    output = Serde.to_deser(_create_vector_type(T), rows)
     # Output a vector of FittingDegree or etc.
 end
+
+_create_vector_type(T::DataType) = Vector{T}
+_create_vector_type(pc::PreprocessConfig) = Vector{pc.datatype}
+
 
 """
 Internally called `_vec_deser`, and returns `CSV.rowtable` whose columns match fields in `T`.
@@ -74,3 +78,7 @@ function process_before_deser(T::Type{<:CSVRow}, f)
     rows = f |> CSV.rowtable
     return rows
 end # for any other types.
+
+function process_before_deser(pc::PreprocessConfig, f)
+    process_before_deser(pc.datatype, f; pc.config...)
+end
