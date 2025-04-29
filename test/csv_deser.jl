@@ -146,19 +146,19 @@ end
 
 
 csv_statind = """
-DateTime,stn,prp,var_S_NS,var_S_EW,var_K_NS,var_K_EW,var_SE_NS,var_SE_EW,var_S_x,var_S_y,var_S_z,var_K_x,var_K_y,var_K_z,var_SE_x,var_SE_y,var_SE_z,var_K,var_S,var_SE
-01-Jan-2014,CHCH,BP_35,-0.0927770121892476,-1.31874297807944,4.37903614786034,13.064348617259,-5.5803137772684,-6.31776573453275,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN
-02-Jan-2014,CHCH,BP_35,0.187720693444812,-0.264511576155514,6.54105004873713,4.79664867202574,-5.81313692082173,-6.09675918233375,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN
-03-Jan-2014,CHCH,BP_35,-0.00844443916921936,-0.127375504393208,4.89829001181269,5.34293498626927,-5.71858373287784,-6.07397682964251,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN
-04-Jan-2014,CHCH,BP_35,-0.0414044203162809,-0.148199925708041,7.40946320265025,6.63452522842359,-5.91663963477171,-6.41910093510377,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN
-05-Jan-2014,CHCH,BP_35,1.60762564931821,-1.02326158017884,29.4399895410091,12.5142689105151,-6.02998555779309,-6.45526073796715,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN
-06-Jan-2014,CHCH,BP_35,-0.296415379821155,-0.120612223140257,6.72995703810994,10.9870898235287,-6.18037210771856,-6.32856717462572,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN
-07-Jan-2014,CHCH,BP_35,0.499346790569236,-0.463512131235742,10.7822824059376,5.68181864971525,-6.10632444729206,-6.31376091445911,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN
-08-Jan-2014,CHCH,BP_35,0.817531166038516,2.12452639723315,13.8178460799605,26.5446773517998,-5.84701426294977,-6.27127152807284,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN
-09-Jan-2014,CHCH,BP_35,0.332470478056347,0.0572627911405571,11.5359107276184,5.98523837622511,-5.97831720439458,-6.39653142991098,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN
-10-Jan-2014,CHCH,BP_35,1.22352198314208,0.734538227098344,16.7991258631776,12.9480994103386,-5.92978665351276,-6.1574046117693,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN
-11-Jan-2014,CHCH,BP_35,0.850146763991446,-0.433661274397261,24.7140843542151,5.55554749239246,-6.25214963464028,-6.41114515197611,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN
-12-Jan-2014,CHCH,BP_35,1.07829085762279,-0.154353918670885,14.4540662741981,4.66344636793813,-5.85276811950442,-6.27160200259897,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN
+DateTime,stn,prp,var_S_NS,var_S_EW,var_K_NS,var_K_EW,var_SE_NS,var_SE_EW,var_S_x,var_S_y,var_S_z,var_K_x,var_K_y,var_K_z,var_SE_x,var_SE_y,var_SE_z,var_K,var_S,var_SE,var_FI_NS,var_FI_EW,var_FI_x,var_FI_y,var_FI_z
+01-Jan-2014,CHCH,BP_35,-0.0927770121892476,-1.31874297807944,4.37903614786034,13.064348617259,-5.5803137772684,-6.31776573453275,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,1.5110123797811e6, 8.15556990175128e6, NaN, NaN, NaN
+02-Jan-2014,CHCH,BP_35,0.187720693444812,-0.264511576155514,6.54105004873713,4.79664867202574,-5.81313692082173,-6.09675918233375,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,2.29495879724223e6, 3.88369819559427e6, NaN, NaN, NaN
+03-Jan-2014,CHCH,BP_35,-0.00844443916921936,-0.127375504393208,4.89829001181269,5.34293498626927,-5.71858373287784,-6.07397682964251,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,1.91235767696348e6, 3.68457994685619e6, NaN, NaN, NaN
+04-Jan-2014,CHCH,BP_35,-0.0414044203162809,-0.148199925708041,7.40946320265025,6.63452522842359,-5.91663963477171,-6.41910093510377,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,2.94815607273639e6, 8.14991910566193e6, NaN, NaN, NaN
+05-Jan-2014,CHCH,BP_35,1.60762564931821,-1.02326158017884,29.4399895410091,12.5142689105151,-6.02998555779309,-6.45526073796715,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,3.7834217629928e6, 8.45119943032876e6, NaN, NaN, NaN
+06-Jan-2014,CHCH,BP_35,-0.296415379821155,-0.120612223140257,6.72995703810994,10.9870898235287,-6.18037210771856,-6.32856717462572,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,4.8204504377151e6, 6.71371396560895e6, NaN, NaN, NaN
+07-Jan-2014,CHCH,BP_35,0.499346790569236,-0.463512131235742,10.7822824059376,5.68181864971525,-6.10632444729206,-6.31376091445911,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,4.67257517542692e6, 6.42771267385233e6, NaN, NaN, NaN
+08-Jan-2014,CHCH,BP_35,0.817531166038516,2.12452639723315,13.8178460799605,26.5446773517998,-5.84701426294977,-6.27127152807284,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,3.21677955144294e6, 7.36021153865845e6, NaN, NaN, NaN
+09-Jan-2014,CHCH,BP_35,0.332470478056347,0.0572627911405571,11.5359107276184,5.98523837622511,-5.97831720439458,-6.39653142991098,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,3.53130136567404e6, 7.47895228268932e6, NaN, NaN, NaN
+10-Jan-2014,CHCH,BP_35,1.22352198314208,0.734538227098344,16.7991258631776,12.9480994103386,-5.92978665351276,-6.1574046117693,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,3.43397281449696e6, 4.70805029398497e6, NaN, NaN, NaN
+11-Jan-2014,CHCH,BP_35,0.850146763991446,-0.433661274397261,24.7140843542151,5.55554749239246,-6.25214963464028,-6.41114515197611,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,7.07274267913311e6, 7.00678578581191e6, NaN, NaN, NaN
+12-Jan-2014,CHCH,BP_35,1.07829085762279,-0.154353918670885,14.4540662741981,4.66344636793813,-5.85276811950442,-6.27160200259897,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,3.55190160670375e6, 5.4780043040648e6, NaN, NaN, NaN
 """
 
 @testset "CSV Specialized case: Statind" begin
@@ -173,7 +173,7 @@ DateTime,stn,prp,var_S_NS,var_S_EW,var_K_NS,var_K_EW,var_SE_NS,var_SE_EW,var_S_x
 
         # Check that df0 has the original CSV structure.
         @test nrow(df0) == 12
-        @test ncol(df0) == 21
+        @test ncol(df0) == 26
 
         # Check that the processed DataFrame has the expected columns.
         @test nrow(df) == 12
@@ -218,7 +218,7 @@ DateTime,stn,prp,var_S_NS,var_S_EW,var_K_NS,var_K_EW,var_SE_NS,var_SE_EW,var_S_x
         @test row12.var.var_K_EW ≈ 4.66344636793813
 
         # Test that NaN values are preserved in the var NamedTuple
-        @test all(isnan.(values(row1.var)[12:end]))  # var_S_x through var_SE
+        @test all(isnan.(values(row1.var)[12:15]))  # var_S_x through var_SE
 
         # Test conversion to Vector{StatInd}
         stat_vec = GEMSMagTIP.read_data(file, Vector{GEMSMagTIP.StatInd})
@@ -241,16 +241,24 @@ DateTime,stn,prp,var_S_NS,var_S_EW,var_K_NS,var_K_EW,var_SE_NS,var_SE_EW,var_S_x
         @test_throws "type NamedTuple has no field" isnan(first_stat.var.var_S_y)
         @test_throws "type NamedTuple has no field" isnan(first_stat.var.var_S_z)
 
-        # Revert `df`
-        dfr = @chain df begin
-            transform(:var => AsTable)
-            select(Not(:var))
-            transform(:DateTime => ByRow(t -> Dates.format(t, GEMSMagTIP.info_date_format)); renamecols=false)
-        end
-        @test dataframes_equal(
-            rename(GEMSMagTIP.standardize_var_suffix, df0; cols=Cols(GEMSMagTIP.expr_matchstatvar)),
-            dfr)
+
     end
+end
+
+@testset "Test Stat's rename function" begin
+    rawcsv = Serde.parse_csv(csv_statind) # named tuples
+    df0 = rawcsv |> DataFrame
+    _deser_wide(rows) = Serde.to_deser(Vector{GEMSMagTIP.StatInd}, rows)
+    df = GEMSMagTIP.process_before_deser(GEMSMagTIP.StatInd, rawcsv) |> _deser_wide |> DataFrame
+    # Revert `df`
+    dfr = @chain df begin
+        transform(:var => AsTable)
+        select(Not(:var))
+        transform(:DateTime => ByRow(t -> Dates.format(t, GEMSMagTIP.info_date_format)); renamecols=false)
+    end
+    @test dataframes_equal(
+        rename(GEMSMagTIP.standardize_var_suffix, df0; cols=Cols(GEMSMagTIP.expr_matchstatvar)),
+        dfr)
 end
 
 @testset "CSV Specialized case: Statind_long" begin
@@ -267,4 +275,113 @@ end
     sort!(statind, [:DateTime, :stn, :prp])
     sort!(statind_long_unstacked, [:DateTime, :stn, :prp])
     @test dataframes_equal(statind, statind_long_unstacked)
+end
+
+using OkInformationalAnalysis, Serde
+# using GEMSMagTIP, DataFrames
+
+@testset "Test Stat's Configuration interface" begin
+    rawcsv = Serde.parse_csv(csv_statind) # named tuples
+    df0 = rawcsv |> DataFrame
+
+    @test all(in(Set([
+            "var_SE_NS",
+            "var_SE_EW",
+            "var_SE_x",
+            "var_SE_y",
+            "var_SE_z",
+            "var_SE",
+        ])), names(select(df0, GEMSMagTIP.expr_matchse)))
+
+    # `rows` output by `process_before_deser` contains number in type String; `to_deser` convert them to Float64 according to StatInd_long.
+    _deser_long(rows) = Serde.to_deser(Vector{GEMSMagTIP.StatInd_long}, rows)
+    config1 = (calc_logsep=true, calc_logfi=true)
+    pc1 = GEMSMagTIP.PreprocessConfig(GEMSMagTIP.StatInd_long, config1)
+    config2 = (calc_sep=true, calc_logfi=true)
+    pc2 = GEMSMagTIP.PreprocessConfig(GEMSMagTIP.StatInd_long, config2)
+    statind_long_a = GEMSMagTIP.process_before_deser(pc1, rawcsv) |> _deser_long |> DataFrame
+    statind_long_b = GEMSMagTIP.process_before_deser(pc2, rawcsv) |> _deser_long |> DataFrame
+
+    # Test whether old variables were no longer available.
+    old_var_names = Set([
+        "var_SE_NS",
+        "var_SE_EW",
+        "var_SE_x",
+        "var_SE_y",
+        "var_SE_z",
+        "var_SE",
+        "var_FI_NS",
+        "var_FI_EW",
+        "var_FI_x",
+        "var_FI_y",
+        "var_FI_z",
+        "var_FI",
+    ])
+    @test all(!in(old_var_names), unique(statind_long_a.variable))
+    @test all(!in(old_var_names), unique(statind_long_b.variable))
+
+    statind_long0 = GEMSMagTIP.process_before_deser(GEMSMagTIP.StatInd_long, rawcsv) |> _deser_long |> DataFrame
+    onlyse0 = filter(:var_type => (t -> t == "SE"), statind_long0)
+    onlyse1a = filter(:var_type => (t -> t == "log₁₀(SEP)"), statind_long_a)
+    onlyse1b = filter(:var_type => (t -> t == "SEP"), statind_long_b)
+
+    let test_count = 0
+
+        @test nrow(onlyse0) == nrow(onlyse1a)
+        for (r0, r1) in zip(eachrow(onlyse0), eachrow(onlyse1a))
+            if !isnan(r1.value)
+                @test log10(se2sep(r0.value)) ≈ r1.value
+                test_count += 1
+            end
+        end
+
+        @test test_count > 0 # make sure the for-loop tests not zero
+    end
+
+    let test_count = 0
+
+        @test nrow(onlyse0) == nrow(onlyse1b)
+        for (r0, r1) in zip(eachrow(onlyse0), eachrow(onlyse1b))
+            if !isnan(r1.value)
+                @test se2sep(r0.value) ≈ r1.value
+                test_count += 1
+            end
+        end
+
+        @test test_count > 0 # make sure the for-loop tests not zero
+    end
+
+    let test_count = 0
+        onlyfi0 = filter(:var_type => (t -> t == "FI"), statind_long0)
+        onlyfi1 = filter(:var_type => (t -> t == "log₁₀(FI)"), statind_long_a)
+
+        @test nrow(onlyfi0) > 0
+        @test nrow(onlyfi0) == nrow(onlyfi1)
+        for (r0, r1) in zip(eachrow(onlyfi0), eachrow(onlyfi1))
+            if !isnan(r1.value)
+                @test log10(r0.value) ≈ r1.value
+                test_count += 1
+            end
+        end
+        @test test_count > 0 # make sure the for-loop tests not zero
+
+    end
+
+end
+
+@testset "Test `read_data` interface" begin
+    mktempdir() do path
+        file = joinpath(path, "StatInd.csv")
+        write(file, csv_statind)
+
+        # df0 is the raw CSV read directly into a DataFrame.
+        df0 = CSV.read(file, DataFrame)
+        # df is the processed DataFrame from GEMSMagTIP.read_data
+        config = (calc_logsep=true, calc_logfi=true)
+        df1 = GEMSMagTIP.read_data(
+            GEMSMagTIP.PreprocessConfig(GEMSMagTIP.StatInd_long, config),
+            file,
+            DataFrame)
+
+    end
 end
