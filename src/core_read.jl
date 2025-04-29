@@ -27,6 +27,10 @@ core_read(fname::Symbol, path) = core_read(Val(fname), path) # then dispatch by 
 
 In this case, it is equivalent as calling `read_data($(split(string(file_statind), ".")[1]), path, DataFrame)`.
 
+"""
+read_data(path, sink) = core_read(path) |> sink
+
+"""
 `read_data(T::Union{Type{<:CSVRow},PreprocessConfig}, path, sink)` deserialize data to type `T` for arbitrary file name, and finally returned as data of type `sink`.
 
 # Example
