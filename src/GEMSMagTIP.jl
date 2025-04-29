@@ -60,6 +60,8 @@ abstract type CSVRow end
 
 """
 Configuration for `process_before_deser`.
+`pc = PreprocessConfig(datatype, config)` can be used to pass keyword arguments to preprocessing function before deserialization, i.e., `process_before_deser(T::datatype, file; config...)`.
+
 """
 struct PreprocessConfig
     datatype::Type{<:CSVRow}

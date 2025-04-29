@@ -26,10 +26,7 @@ core_read(fname::Symbol, path) = core_read(Val(fname), path) # then dispatch by 
 `read_data(path, DataFrame)` dispatch deserialization by file name. For example, if `basename(path)` is `$file_statind`, it returns the `DataFrame` with each row being `$(split(string(file_statind), ".")[1])`.
 
 In this case, it is equivalent as calling `read_data($(split(string(file_statind), ".")[1]), path, DataFrame)`.
-"""
-read_data(path, sink, config::ProcessingConfig=ProcessingConfig()) = core_read(path, config) |> sink
 
-"""
 `read_data(T::Union{Type{<:CSVRow},PreprocessConfig}, path, sink)` deserialize data to type `T` for arbitrary file name, and finally returned as data of type `sink`.
 
 # Example
@@ -53,7 +50,7 @@ core_read(::Val{file_statind}, path) = _vec_deser(StatInd, path)
 
 
 # General case (no extra processing)
-function _vec_deser(T, path, config)
+function _vec_deser(T, path)
     data0 = CSV.File(path)
     rows = process_before_deser(T, data0)
     # # KEYNOTE: The following processing works, but superfluous because the final destination of `deser_csv` is `to_deser`, which already accepts rows.
