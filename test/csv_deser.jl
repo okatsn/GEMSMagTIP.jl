@@ -329,7 +329,7 @@ using OkInformationalAnalysis, Serde
 
         @test nrow(onlyse0) == nrow(onlyse1a)
         for (r0, r1) in zip(eachrow(onlyse0), eachrow(onlyse1a))
-            if !isnan(r1.value)
+            if !ismissing(r1.value)
                 @test log10(se2sep(r0.value)) ≈ r1.value
                 test_count += 1
             end
@@ -342,7 +342,7 @@ using OkInformationalAnalysis, Serde
 
         @test nrow(onlyse0) == nrow(onlyse1b)
         for (r0, r1) in zip(eachrow(onlyse0), eachrow(onlyse1b))
-            if !isnan(r1.value)
+            if !ismissing(r1.value)
                 @test se2sep(r0.value) ≈ r1.value
                 test_count += 1
             end
@@ -358,7 +358,7 @@ using OkInformationalAnalysis, Serde
         @test nrow(onlyfi0) > 0
         @test nrow(onlyfi0) == nrow(onlyfi1)
         for (r0, r1) in zip(eachrow(onlyfi0), eachrow(onlyfi1))
-            if !isnan(r1.value)
+            if !ismissing(r1.value)
                 @test log10(r0.value) ≈ r1.value
                 test_count += 1
             end
