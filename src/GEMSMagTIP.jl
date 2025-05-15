@@ -47,6 +47,11 @@ function Base.showerror(io::IO, e::NotSupported)
 end
 
 
+# # Frequency bands
+
+include("freqbands.jl")
+
+
 # # Deserialization for specific format
 
 const info_date_format = "dd-u-Y"
