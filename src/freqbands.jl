@@ -1,9 +1,9 @@
 freq_bands = Dict(
-    "ULF_A" => [0.001, 0.003],
-    "ULF_B" => [0.001, 0.01],
-    "ULF_C" => [0.001, 0.1],
-    "BP_35" => [0.00032, 0.0178],
-    "BP_40" => [0.00010, 0.0178],
+    "ULF_A" => (0.001, 0.003),
+    "ULF_B" => (0.001, 0.01),
+    "ULF_C" => (0.001, 0.1),
+    "BP_35" => (0.00032, 0.0178),
+    "BP_40" => (0.00010, 0.0178),
 )
 
 alternative_names = Dict(
@@ -22,9 +22,7 @@ const freq_bands_ext = merge(freq_bands, alternative_names)
 
 ```jldoctest
 julia> GEMSMagTIP.FreqBandDict()["ULF-C"]
-2-element Vector{Float64}:
- 0.001
- 0.1
+(0.001, 0.1)
 ```
 """
 struct FreqBandDict end
